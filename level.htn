@@ -5,6 +5,7 @@ Import "./displayTiles.htn"
 text tiles(text: ""):
 	Game.board_width = 5
 	Game.board_height = 5
+	📣check_board = "Check board for finished"
 	When game_starts:
 		check_if_else(Self.clone_index == 0):
 			check_once_if(Game.board_height * Game.board_width + 1 != length(Self.↩️empty_board)):
@@ -30,19 +31,31 @@ text tiles(text: ""):
 		Self.x = x
 		y = floor(clone_index / Game.board_width)
 		Self.y = y
-		tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
-		origin_position_x = Game.width / 2 - tile_size * Game.board_width / 2 - tile_size / 2
-		origin_position_y = Game.height / 2 - tile_size * Game.board_height / 2 - tile_size / 2
+		Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+		origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 - Self.tile_size / 2
+		origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 - Self.tile_size / 2
 		custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
 		custom_block set_image_for(tile: Self.↩️tile)
 		# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
-		x_position = origin_position_x + tile_size * x
-		y_position = origin_position_y + tile_size * y
+		Self.center_x_position = origin_position_x + Self.tile_size * x
+		Self.center_y_position = origin_position_y + Self.tile_size * y
 		wait(seconds: 0)
 		aspect_ratio = Self.height / Self.width
-		set_width(tile_size * Self.📺width_multiplier, height: aspect_ratio * tile_size * Self.📺height_multiplier)
-		set_position(to_x: x_position + tile_size * Self.📺offset_radius * cos(Self.📺offset_angle), y: y_position + tile_size * Self.📺offset_radius * sin(Self.📺offset_angle))
+		set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+		Self.times_tapped = random(0, to: 3)
 		repeat_forever:
-			set_angle(Self.📺rotation_offset)
-	When is_tapped(Self):
-		show_popup(message: join(Self.↩️tile, with: join(" at ", with: join(Self.x, with: join(",", with: Self.y)))))
+			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.times_tapped * 90), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.times_tapped * 90))
+			set_angle(Self.📺rotation_offset + Self.times_tapped * 90)
+	When is_tapped(Screen):
+		check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
+			increase(Self.times_tapped, by: 1)
+			broadcast_message(named: 📣check_board)
+			wait(seconds: 0)
+			check_once_if(Game.board_complete == "true"):
+				show_popup(message: "Complete!")
+	When i_get_a_message(📣check_board):
+		check_if_else(Self.clone_index == 0):
+			Game.board_complete = "true"
+		else:
+			check_once_if(Self.times_tapped % Self.symmetry != 0):
+				Game.board_complete = "false"
