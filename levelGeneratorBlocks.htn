@@ -1,4 +1,5 @@
 custom_block generate_level(width: 5, height: 5, seed: 0):
+	Self.random_seed = seed
 	check_once_if(height * width + 1 != length(Self.↩️empty_board)):
 		custom_block create_empty_level(width: width, height: height)
 	board = Self.↩️empty_board
@@ -100,4 +101,11 @@ custom_block get_connection_status_to(direction: "L", x: 0, y: 0, board: "", wid
 
 custom_block get_random_number(between: 0, and_max: 10):
 	and_max = max(between, and_max)
-	Self.↩️random_number = random(between, to: and_max)
+	m = 2 ^ 31
+	a = 1103515245
+	c = 12345
+	repeat(times: 5):
+		Self.random_seed = (a * Self.random_seed + c) % m
+	Self.↩️random_number = floor(Self.random_seed / 2 ^ 16) % (and_max - between + 1) + between
+	# show_popup(message: join("get_random_number(between: ", with: join(between, with: join(", and_max: ", with: join(and_max, with: join(") = ", with: join(Self.↩️random_number, with: join("
+	# Top bits = ", with: floor(Self.random_seed / 2 ^ 16)))))))))
