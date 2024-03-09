@@ -1,0 +1,50 @@
+Import "secretblocks.htn"
+Import "./animation.htn"
+
+Scene game:
+	square win_screen:
+		Game.📣show_win_buttons = "Show win buttons"
+		When i_get_a_message(Game.📣play):
+			set_invisibility(percent: 100)
+		When game_starts:
+			set_invisibility(percent: 100)
+			check_once_if(Self.total_clones == 1):
+				set_position(to_x: Game.width / 2, y: Game.height / 2)
+				create_a_clone_of_this_object
+				set_width(Game.width, height: Game.height)
+				set_color(h(0, s: 0, b: 90))
+		When object_is_cloned:
+			set_text(to: "Level complete!", color: h(Game.primary_color_hue, s: 5, b: 5))
+			wait(seconds: 0)
+			set_position(to_x: Game.width / 2, y: Game.height * 0.8 + Self.height + 8)
+		When i_get_a_message(Game.📣Success):
+			bring_to_front
+			custom_block ease_invisibility(from: 100, to: 20, milliseconds: 1000)
+			broadcast_message(named: Game.📣show_win_buttons)
+	
+	triangle next_level_button:
+		When i_get_a_message(Game.📣play):
+			set_invisibility(percent: 100)
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_position(to_x: Game.width / 2 + Self.width / 2 + 24, y: Game.height * 0.2)
+			set_color(h(Game.primary_color_hue, s: 5, b: 5))
+			check_once_if(Self.total_clones == 1):
+				create_clones_of_this_object(times: 2)
+				set_angle(-90)
+		When object_is_cloned:
+			width = Self.width
+			check_if_else(Self.clone_index == 1):
+				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
+				set_position(to_x: Self.x_position - width / 7.5, y: Self.y_position + width / 3.4)
+				set_size(percent: Self.size_as_a_percent * 3)
+			else:
+				set_image(square)
+				set_width(width + 32, height: width + 32)
+		When i_get_a_message(Game.📣show_win_buttons):
+			bring_to_front
+			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
+			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+		When is_tapped(Self):
+			increase(Game.current_level_index, by: 1)
+			broadcast_message(named: Game.📣play)

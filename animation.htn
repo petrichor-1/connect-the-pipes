@@ -1,0 +1,10 @@
+Import "advanced.htn"
+
+custom_block ease_invisibility(from: 0, to: 100, milliseconds: 1000):
+	custom_block ease_invisibility_sine(from: from, offset: to - from, start_time: User.time, duration_ms: milliseconds)
+
+custom_block ease_invisibility_sine(from: 0, offset: 0, start_time: 0, duration_ms: 1000):
+	progress = min(1, (User.time - start_time) / duration_ms)
+	set_invisibility(percent: progress * offset + from)
+	check_once_if(progress < 1):
+		custom_block ease_invisibility_sine(from: from, offset: offset, start_time: start_time, duration_ms: duration_ms)
