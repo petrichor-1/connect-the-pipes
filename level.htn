@@ -2,60 +2,61 @@ Import "secretblocks.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
 
-text tiles(text: ""):
-	Game.board_width = 5
-	Game.board_height = 5
-	📣check_board = "Check board for finished"
-	When game_starts:
-		check_if_else(Self.clone_index == 0):
-			check_once_if(Game.board_height * Game.board_width + 1 != length(Self.↩️empty_board)):
-				custom_block create_empty_level(width: Game.board_width, height: Game.board_height)
-			Self.board = Self.↩️empty_board
-			x = 0
-			repeat(times: Game.board_width):
-				y = 0
-				repeat(times: Game.board_height):
-					custom_block generate_tile_at(x: x, y: y, board: Self.board, width: Game.board_width, height: Game.board_height)
-					Self.board = Self.↩️board_with_generated_tile
-					increase(y, by: 1)
-				increase(x, by: 1)
-			# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
-			create_clones_of_this_object(times: Game.board_width * Game.board_height)
-			# show_popup(message: Self.board)
-		else:
-			Original_object.clone_index_offset = Self.clone_index
-			destroy
-	When object_is_cloned:
-		clone_index = Self.clone_index - Original_object.clone_index_offset - 1
-		x = clone_index % Game.board_width
-		Self.x = x
-		y = floor(clone_index / Game.board_width)
-		Self.y = y
-		Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
-		origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 - Self.tile_size / 2
-		origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 - Self.tile_size / 2
-		custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
-		custom_block set_image_for(tile: Self.↩️tile)
-		# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
-		Self.center_x_position = origin_position_x + Self.tile_size * x
-		Self.center_y_position = origin_position_y + Self.tile_size * y
-		wait(seconds: 0)
-		aspect_ratio = Self.height / Self.width
-		set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
-		Self.times_tapped = random(0, to: 3)
-		repeat_forever:
-			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.times_tapped * 90), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.times_tapped * 90))
-			set_angle(Self.📺rotation_offset + Self.times_tapped * 90)
-	When is_tapped(Screen):
-		check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
-			increase(Self.times_tapped, by: 1)
-			broadcast_message(named: 📣check_board)
+Scene game:
+	text tiles(text: ""):
+		Game.board_width = 5
+		Game.board_height = 5
+		📣check_board = "Check board for finished"
+		When game_starts:
+			check_if_else(Self.clone_index == 0):
+				check_once_if(Game.board_height * Game.board_width + 1 != length(Self.↩️empty_board)):
+					custom_block create_empty_level(width: Game.board_width, height: Game.board_height)
+				Self.board = Self.↩️empty_board
+				x = 0
+				repeat(times: Game.board_width):
+					y = 0
+					repeat(times: Game.board_height):
+						custom_block generate_tile_at(x: x, y: y, board: Self.board, width: Game.board_width, height: Game.board_height)
+						Self.board = Self.↩️board_with_generated_tile
+						increase(y, by: 1)
+					increase(x, by: 1)
+				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
+				create_clones_of_this_object(times: Game.board_width * Game.board_height)
+				# show_popup(message: Self.board)
+			else:
+				Original_object.clone_index_offset = Self.clone_index
+				destroy
+		When object_is_cloned:
+			clone_index = Self.clone_index - Original_object.clone_index_offset - 1
+			x = clone_index % Game.board_width
+			Self.x = x
+			y = floor(clone_index / Game.board_width)
+			Self.y = y
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 - Self.tile_size / 2
+			origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 - Self.tile_size / 2
+			custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
+			custom_block set_image_for(tile: Self.↩️tile)
+			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
+			Self.center_x_position = origin_position_x + Self.tile_size * x
+			Self.center_y_position = origin_position_y + Self.tile_size * y
 			wait(seconds: 0)
-			check_once_if(Game.board_complete == "true"):
-				show_popup(message: "Complete!")
-	When i_get_a_message(📣check_board):
-		check_if_else(Self.clone_index == 0):
-			Game.board_complete = "true"
-		else:
-			check_once_if(Self.times_tapped % Self.symmetry != 0):
-				Game.board_complete = "false"
+			aspect_ratio = Self.height / Self.width
+			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+			Self.times_tapped = random(0, to: 3)
+			repeat_forever:
+				set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.times_tapped * 90), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.times_tapped * 90))
+				set_angle(Self.📺rotation_offset + Self.times_tapped * 90)
+		When is_tapped(Screen):
+			check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
+				increase(Self.times_tapped, by: 1)
+				broadcast_message(named: 📣check_board)
+				wait(seconds: 0)
+				check_once_if(Game.board_complete == "true"):
+					show_popup(message: "Complete!")
+		When i_get_a_message(📣check_board):
+			check_if_else(Self.clone_index == 0):
+				Game.board_complete = "true"
+			else:
+				check_once_if(Self.times_tapped % Self.symmetry != 0):
+					Game.board_complete = "false"
