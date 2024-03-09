@@ -4,8 +4,7 @@ Import "./animation.htn"
 Scene game:
 	square win_screen:
 		Game.📣show_win_buttons = "Show win buttons"
-		When i_get_a_message(Game.📣play):
-			set_invisibility(percent: 100)
+		custom_rule hide_on_play
 		When game_starts:
 			set_invisibility(percent: 100)
 			check_once_if(Self.total_clones == 1):
@@ -21,10 +20,20 @@ Scene game:
 			bring_to_front
 			custom_block ease_invisibility(from: 100, to: 20, milliseconds: 1000)
 			broadcast_message(named: Game.📣show_win_buttons)
+
+	text win_screen_tap_count_display(text: "0 taps", resize_scale: 0.75):
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+		When i_get_a_message(Game.📣Success):
+			set_text(to: join(Game.total_taps, with: " taps"), color: h(Game.primary_color_hue, s: 5, b: 5))
+			wait(seconds: 0)
+			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 64)
+			bring_to_front
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
 	
 	triangle next_level_button:
-		When i_get_a_message(Game.📣play):
-			set_invisibility(percent: 100)
+		custom_rule hide_on_play
 		When game_starts:
 			set_invisibility(percent: 100)
 			set_position(to_x: Game.width / 2 + Self.width / 2 + 24, y: Game.height * 0.2)
@@ -48,3 +57,7 @@ Scene game:
 		When is_tapped(Self):
 			increase(Game.current_level_index, by: 1)
 			broadcast_message(named: Game.📣play)
+
+custom_rule hide_on_play:
+	When i_get_a_message(Game.📣play):
+		set_invisibility(percent: 100)

@@ -51,6 +51,7 @@ Scene game:
 				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
 				create_clones_of_this_object(times: Game.board_width * Game.board_height)
 				Game.is_loading = "false"
+				Game.total_taps = 0
 				# show_popup(message: Self.board)
 			else:
 				Original_object.clone_index_offset = Self.clone_index
@@ -80,6 +81,7 @@ Scene game:
 		When is_tapped(Screen):
 			check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
 				increase(Self.times_tapped, by: 1)
+				increase(Game.total_taps, by: 1)
 				broadcast_message(named: 📣check_board)
 				wait(seconds: 0)
 				check_once_if(Game.board_complete == "true"):
@@ -90,6 +92,13 @@ Scene game:
 			else:
 				check_once_if(Self.times_tapped % Self.symmetry != 0):
 					Game.board_complete = "false"
+
+	text tap_count_display(text: "Taps: 0"):
+		When game_starts:
+			send_to_back
+			set_position(to_x: Game.width / 2, y: Game.height - Self.height / 2 - 8)
+			repeat_forever:
+				set_text(to: join("Taps: ", with: Game.total_taps), color: h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
 
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)
