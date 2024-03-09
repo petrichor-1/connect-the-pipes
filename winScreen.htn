@@ -4,6 +4,7 @@ Import "./animation.htn"
 Scene game:
 	square win_screen:
 		Game.📣show_win_buttons = "Show win buttons"
+		Game.📣show_stars = "show stars"
 		custom_rule hide_on_play
 		When game_starts:
 			set_invisibility(percent: 100)
@@ -19,6 +20,8 @@ Scene game:
 		When i_get_a_message(Game.📣Success):
 			bring_to_front
 			custom_block ease_invisibility(from: 100, to: 20, milliseconds: 1000)
+			broadcast_message(named: Game.📣show_stars)
+			wait(seconds: 1.5)
 			broadcast_message(named: Game.📣show_win_buttons)
 
 	text win_screen_tap_count_display(text: "0 taps", resize_scale: 0.75):
@@ -31,6 +34,46 @@ Scene game:
 			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 64)
 			bring_to_front
 			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+
+	star win_screen_stars:
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+			check_once_if(Self.total_clones == 1):
+				create_clones_of_this_object(times: 2)
+		When i_get_a_message(Game.📣show_stars):
+			# Technically this means that depending on rng a 3 star finish may be impossible,
+			#     but that is not consistent between plays so it is acceptable
+			three_star_taps = Game.board_width * Game.board_height * 2
+			two_star_taps = three_star_taps + Game.board_width * Game.board_height / 2
+			one_star_taps = two_star_taps + Game.board_width * Game.board_height
+			stars = 0
+			check_if_else(Game.total_taps <= three_star_taps):
+				stars = 3
+			else:
+				check_if_else(Game.total_taps <= two_star_taps):
+					stars = 2
+				else:
+					check_once_if(Game.total_taps <= one_star_taps):
+						stars = 1
+			star_offset = Self.clone_index - 1
+			final_size = 100 - absolute_value(star_offset) * 10
+			final_x = Game.width / 2 + star_offset * 128
+			final_y = Game.height / 2 - absolute_value(star_offset) * 8
+			repeat(times: Self.clone_index):
+				wait_milliseconds(500)
+			set_size(percent: 0)
+			set_invisibility(percent: 0)
+			bring_to_front
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness + 50))
+			check_if_else(stars > Self.clone_index):
+				custom_block ease_position_and_size(from_x: Game.width / 2, to_x: final_x, from_y: Game.height / 2, to_y: final_y, from_size: 0, to_size: final_size, milliseconds: 500)
+			else:
+				set_invisibility(percent: 100)
+				set_position(to_x: final_x, y: final_y)
+				set_size(percent: final_size * 0.9)
+				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation / 2, b: Game.primary_color_brightness))
+				custom_block ease_invisibility(from: 100, to: 10, milliseconds: 500)
 	
 	triangle next_level_button:
 		custom_rule hide_on_play
