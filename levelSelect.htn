@@ -1,5 +1,7 @@
 Import "./level.htn"
 text placeholder(text: "Level select goes here", x_position: 512, y_position: 384, resize_scale: 2):
 	When is_tapped(Screen):
+		Game.board_width = 5
+		Game.board_height = 5
 		Game.current_level_index = 0
 		change_scene(to: Scenes.game)

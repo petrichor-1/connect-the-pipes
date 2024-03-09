@@ -1,16 +1,48 @@
 Import "secretblocks.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
+Import "./lists.htn"
 
 Scene game:
-	text tiles(text: ""):
-		Game.board_width = 5
-		Game.board_height = 5
-		📣check_board = "Check board for finished"
+	text level_generator(text: ""):
 		When game_starts:
+			custom_block create_list(length_length: 2, content_index_length: 4)
+			Game.generated_levels = Self.↩️📊created_list
+			Game.generated_levels_list_offset = Game.current_level_index
+			index_of_level_generation = Game.current_level_index
+			repeat_forever:
+				check_if_else(length(Game.generated_levels) < 2500):
+					custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: index_of_level_generation)
+					custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
+					Game.generated_levels = Self.↩️📊appended_list
+					increase(index_of_level_generation, by: 1)
+					# show_popup(message: Game.generated_levels)
+				else:
+					check_once_if(Game.current_level_index > Game.generated_levels_list_offset):
+						list = Game.generated_levels
+						new_offset = Game.generated_levels_list_offset
+						repeat(times: Game.current_level_index - Game.generated_levels_list_offset):
+							custom_block remove_item_in(list: list, at_index: 0)
+							# show_popup(message: join("Before: ", with: join(list, with: join("
+							# 
+							# after: ", with: Self.↩️📊removed_list))))
+							list = Self.↩️📊removed_list
+							increase(new_offset, by: 1)
+						custom_block rebuild(list: list)
+						Game.generated_levels = Self.↩️📊rebuilt_list
+						Game.generated_levels_list_offset = new_offset
+
+	text tiles(text: ""):
+		📣check_board = "Check board for finished"
+		📣play = "play"
+		When game_starts:
+			broadcast_message(named: 📣play)
+		When i_get_a_message(📣play):
 			check_if_else(Self.clone_index == 0):
-				custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: Game.current_level_index)
-				Self.board = Self.↩️generated_board
+				# show_popup(message: join("Looking for level with index ", with: Game.current_level_index))
+				custom_block wait_for_level_with(index: Game.current_level_index)
+				custom_block get_item_in(list: Game.generated_levels, at_index: Game.current_level_index - Game.generated_levels_list_offset)
+				Self.board = Self.↩️📊list_item
 				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
 				create_clones_of_this_object(times: Game.board_width * Game.board_height)
 				# show_popup(message: Self.board)
@@ -45,9 +77,17 @@ Scene game:
 				wait(seconds: 0)
 				check_once_if(Game.board_complete == "true"):
 					show_popup(message: "Complete!")
+					increase(Game.current_level_index, by: 1)
+					broadcast_message(named: 📣play)
 		When i_get_a_message(📣check_board):
 			check_if_else(Self.clone_index == 0):
 				Game.board_complete = "true"
 			else:
 				check_once_if(Self.times_tapped % Self.symmetry != 0):
 					Game.board_complete = "false"
+
+custom_block wait_for_level_with(index: 0):
+	custom_block get_length_of(list: Game.generated_levels)
+	check_once_if(Self.↩️📊list_length + Game.generated_levels_list_offset <= current_level_index):
+		wait(seconds: 0)
+		custom_block wait_for_level_with(index: index)

@@ -1,0 +1,59 @@
+custom_block create_list(length_length: 2, content_index_length: 6):
+	header = join(character_at_index(in: length_length, at: 0), with: join(character_at_index(in: content_index_length, at: 0), 
+		with: characters_between(in: 10^min(length_length,9), between: 1, and: 1e100)))
+	Self.↩️📊created_list = join(header, with: "🐠")
+
+custom_block append_to(list: "", new_item: ""):
+	length_length = character_at_index(in: list, at: 0)
+	content_index_length = character_at_index(in: list, at: 1)
+	list_length = characters_between(in: list, between: 2, and: 2 + length_length)
+	Self.↩️📊appended_list = join(characters_between(in: list, between: 0, and: 2), 
+		with: join(characters_between(in: 10 ^ length_length + list_length + 1, between: 1, and: 1e100), 
+		with: join(characters_between(in: list, between: 2 + length_length, and: 2 + length_length + 2 * content_index_length * list_length),
+		with: join(characters_between(in: 10 ^ content_index_length + length(list) - 2 * content_index_length * list_length - 2 - length_length, between: 1, and: 1e100),
+		with: join(characters_between(in: 10 ^ content_index_length + length(new_item), between: 1, and: 1e100),
+		with: join(characters_between(in: list, between: 2 + length_length + 2 * content_index_length * list_length, and: 1e100),
+		with: new_item
+	))))))
+
+custom_block get_item_in(list: "", at_index: 0):
+	length_length = character_at_index(in: list, at: 0)
+	content_index_length = character_at_index(in: list, at: 1)
+	list_length = characters_between(in: list, between: 2, and: 2 + length_length)
+	item_start_index = 2 + length_length + 2 * list_length * content_index_length + 1 * characters_between(in: list, between: 2 + length_length + 2 * content_index_length * at_index, and: 2 + length_length + 2 * content_index_length * at_index + content_index_length)
+	item_length = characters_between(in: list, between: content_index_length + 2 + length_length + 2 * content_index_length * at_index, and: 2 + length_length + 2 * content_index_length * at_index + 2 * content_index_length)
+	Self.↩️📊list_item = characters_between(in: list,
+		between: item_start_index,
+		and: item_start_index + item_length)
+	# show_popup(message: join("Item start index: ", with: join(item_start_index, with: join(", length: ", with: item_length))))
+	# show_popup(message: join("Item at ", with: join(at_index, with: join(" is ", with: Self.↩️📊list_item))))
+
+custom_block get_length_of(list: ""):
+	length_length = character_at_index(in: list, at: 0)
+	Self.↩️📊list_length = characters_between(in: list, between: 2, and: 2 + length_length)
+
+custom_block remove_item_in(list: "", at_index: 0):
+	#Just removes the reference to it in the index, removing the actual content is more challenging.
+	# If you want to remove the content, rebuild the list after this.
+	length_length = character_at_index(in: list, at: 0)
+	content_index_length = character_at_index(in: list, at: 1)
+	list_length = characters_between(in: list, between: 2, and: 2 + length_length)
+	Self.↩️📊removed_list = join(characters_between(in: list, between: 0, and: 2), 
+		with: join(characters_between(in: 10 ^ length_length + list_length - 1, between: 1, and: 1e100), 
+		with: join(characters_between(in: list, between: 2 + length_length, and: 2 + length_length + 2 * content_index_length * at_index),
+		with: join(characters_between(in: list, between: 2 + length_length + 2 * content_index_length * (1 + at_index), and: 1e100),
+		with: new_item
+	))))
+
+custom_block rebuild(list: ""):
+	custom_block create_list(length_length: character_at_index(in: list, at: 0), content_index_length: character_at_index(in: list, at: 1))
+	new_list = Self.↩️📊created_list
+	custom_block get_length_of(list: list)
+	list_length = Self.↩️📊list_length
+	index = 0
+	repeat(times: list_length):
+		custom_block get_item_in(list: list, at_index: index)
+		custom_block append_to(list: new_list, new_item: Self.↩️📊list_item)
+		new_list = Self.↩️📊appended_list
+		increase(index, by: 1)
+	Self.↩️📊rebuilt_list = new_list
