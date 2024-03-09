@@ -79,26 +79,49 @@ Scene game:
 		custom_rule hide_on_play
 		When game_starts:
 			set_invisibility(percent: 100)
-			set_position(to_x: Game.width / 2 + Self.width / 2 + 24, y: Game.height * 0.2)
+			set_position(to_x: Game.width / 2 + 182, y: Game.height * 0.2)
 			set_color(h(Game.primary_color_hue, s: 5, b: 5))
 			check_once_if(Self.total_clones == 1):
 				create_clones_of_this_object(times: 2)
 				set_angle(-90)
 		When object_is_cloned:
-			width = Self.width
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position - width / 7.5, y: Self.y_position + width / 3.4)
-				set_size(percent: Self.size_as_a_percent * 3)
+				set_position(to_x: Self.x_position - 10, y: Self.y_position + 22)
+				set_size(percent: 300)
 			else:
 				set_image(square)
-				set_width(width + 32, height: width + 32)
+				set_width(182, height: 182)
 		When i_get_a_message(Game.📣show_win_buttons):
 			bring_to_front
 			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
 			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
 		When is_tapped(Self):
 			increase(Game.current_level_index, by: 1)
+			broadcast_message(named: Game.📣play)
+
+	text replay_level_button(text: "↺"):
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_position(to_x: Game.width / 2, y: Game.height * 0.2)
+			set_color(h(Game.primary_color_hue, s: 5, b: 5))
+			check_once_if(Self.total_clones == 1):
+				create_clones_of_this_object(times: 2)
+				set_size(percent: 200)
+		When object_is_cloned:
+			check_if_else(Self.clone_index == 1):
+				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
+				set_position(to_x: Self.x_position, y: Self.y_position + 22)
+				set_size(percent: 300)
+			else:
+				set_image(square)
+				set_width(182, height: 182)
+		When i_get_a_message(Game.📣show_win_buttons):
+			bring_to_front
+			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
+			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+		When is_tapped(Self):
 			broadcast_message(named: Game.📣play)
 
 custom_rule hide_on_play:
