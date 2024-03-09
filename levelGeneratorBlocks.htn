@@ -1,0 +1,89 @@
+custom_block create_empty_level(width: 0, height: 0):
+	result = ":"
+	repeat(times: width):
+		repeat(times: height):
+			result = join("????", with: result)
+	Self.↩️empty_board = result
+
+custom_block generate_tile_at(x: 0, y: 0, board: "", width: 5, height: 5):
+	connections = ":"
+	forbidden_connections = ":"
+	check_if_else (x < width - 1):
+		custom_block get_connection_status_to(direction: "L", x: x + 1, y: y, board: board, width: width)
+		check_if_else(Self.↩️connection_status == "True"):
+			connections = join("R", with: connections)
+		else:
+			check_once_if(Self.↩️connection_status == "False"):
+				forbidden_connections = join("R", with: forbidden_connections)
+	else:
+		forbidden_connections = join("R", with: forbidden_connections)
+	check_if_else (x > 0):
+		custom_block get_connection_status_to(direction: "R", x: x - 1, y: y, board: board, width: width)
+		check_if_else(Self.↩️connection_status == "True"):
+			connections = join("L", with: connections)
+		else:
+			check_once_if(Self.↩️connection_status == "False"):
+				forbidden_connections = join("L", with: forbidden_connections)
+	else:
+		forbidden_connections = join("L", with: forbidden_connections)
+	check_if_else (y < height - 1):
+		custom_block get_connection_status_to(direction: "D", x: x, y: y + 1, board: board, width: width)
+		check_if_else(Self.↩️connection_status == "True"):
+			connections = join("U", with: connections)
+		else:
+			check_once_if(Self.↩️connection_status == "False"):
+				forbidden_connections = join("U", with: forbidden_connections)
+	else:
+		forbidden_connections = join("U", with: forbidden_connections)
+	check_if_else (y > 0):
+		custom_block get_connection_status_to(direction: "U", x: x, y: y - 1, board: board, width: width)
+		check_if_else(Self.↩️connection_status == "True"):
+			connections = join("D", with: connections)
+		else:
+			check_once_if(Self.↩️connection_status == "False"):
+				forbidden_connections = join("D", with: forbidden_connections)
+	else:
+		forbidden_connections = join("D", with: forbidden_connections)
+	random_direction_options = ":"
+	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
+	check_once_if(not(all_used_or_forbidden_directions MATCHES "R")):
+		random_direction_options = join("R", with: random_direction_options)
+	check_once_if(not(all_used_or_forbidden_directions MATCHES "L")):
+		random_direction_options = join("L", with: random_direction_options)
+	check_once_if(not(all_used_or_forbidden_directions MATCHES "U")):
+		random_direction_options = join("U", with: random_direction_options)
+	check_once_if(not(all_used_or_forbidden_directions MATCHES "D")):
+		random_direction_options = join("D", with: random_direction_options)
+	check_once_if(length(random_direction_options) > 1):
+		custom_block get_random_number(between: 0, and_max: length(random_direction_options) - 2)
+		index = Self.↩️random_number
+		custom_block get_random_number(between: 1, and_max: length(random_direction_options) - 1 - index)
+		repeat(times: Self.↩️random_number):
+			connections = join(character_at_index(in: random_direction_options, at: index), with: connections)
+			increase(index, by: 1)
+	repeat(times: 5 - length(connections)):
+		connections = join("|", with: connections)
+	generated_tile = characters_between(in: connections, between: 0, and: 4)
+	index = (y * width + x) * 4
+	Self.↩️board_with_generated_tile = join(characters_between(in: board, between: 0, and: index), with: join(generated_tile, with: characters_between(in: board, between: index + 4, and: length(board))))
+
+custom_block get_tile_at(x: 0, y: 0, board: "", width: 0):
+	index = (y * width + x) * 4
+	Self.↩️tile = characters_between(in: board, between: index, and: index + 4)
+
+custom_block get_connection_status_to(direction: "L", x: 0, y: 0, board: "", width: 0):
+	index = (y * width + x) * 4
+	tile = characters_between(in: board, between: index, and: index + 4)
+	check_if_else(tile == "????"):
+		Self.↩️connection_status = "Undefined"
+	else:
+		check_if_else(tile MATCHES direction):
+			# check_once_if(direction == "R" and x == 1 and y == 4):
+			# 	show_popup(message: tile)
+			Self.↩️connection_status = "True"
+		else:
+			Self.↩️connection_status = "False"
+
+custom_block get_random_number(between: 0, and_max: 10):
+	and_max = max(between, and_max)
+	Self.↩️random_number = random(between, to: and_max)

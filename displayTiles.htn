@@ -1,0 +1,134 @@
+custom_block set_image_for(tile: "LRUD"):
+	# First, get the directions in a known order
+	directions = ":"
+	check_once_if(tile MATCHES "L"):
+		directions = join(directions, with: "L")
+	check_once_if(tile MATCHES "R"):
+		directions = join(directions, with: "R")
+	check_once_if(tile MATCHES "U"):
+		directions = join(directions, with: "U")
+	check_once_if(tile MATCHES "D"):
+		directions = join(directions, with: "D")
+	# Now, directions will always be in the order LRUD, with a colon at the start.
+	check_if_else(directions == ":L"):
+		Self.📺width_multiplier = 1 / 3
+		Self.📺height_multiplier = 1 / 3
+		Self.📺rotation_offset = 0
+		Self.📺offset_radius = 2 / 6
+		Self.📺offset_angle = 180
+		set_image(square)
+	else:
+		check_if_else(directions == ":LR"):
+			Self.📺width_multiplier = 1
+			Self.📺height_multiplier = 1 / 3
+			Self.📺rotation_offset = 0
+			Self.📺offset_radius = 0
+			Self.📺offset_angle = 0
+			set_image(square)
+		else:
+			check_if_else(directions == ":LRU"):
+				Self.📺width_multiplier = 1
+				Self.📺height_multiplier = 1
+				Self.📺rotation_offset = 0
+				Self.📺offset_radius = 0.17
+				Self.📺offset_angle = 90
+				set_image(t_2)
+			else:
+				check_if_else(directions == ":LRUD"):
+					Self.📺width_multiplier = 1
+					Self.📺height_multiplier = 1
+					Self.📺rotation_offset = 45
+					Self.📺offset_radius = 0
+					Self.📺offset_angle = 0
+					set_image(x)
+				else:
+					check_if_else(directions == ":LRD"):
+						Self.📺width_multiplier = 1
+						Self.📺height_multiplier = -1
+						Self.📺rotation_offset = 0
+						Self.📺offset_radius = 0.17
+						Self.📺offset_angle = -90
+						set_image(t_2)
+					else:
+						check_if_else(directions == ":LU"):
+							Self.📺width_multiplier = 2 / 3
+							Self.📺height_multiplier = 2 / 3
+							Self.📺rotation_offset = 0
+							Self.📺offset_radius = 0.25
+							Self.📺offset_angle = 135
+							set_image(corner)
+						else:
+							check_if_else(directions == ":LUD"):
+								Self.📺width_multiplier = 1
+								Self.📺height_multiplier = 1
+								Self.📺rotation_offset = 90
+								Self.📺offset_radius = 0.169
+								Self.📺offset_angle = 180
+								set_image(t_2)
+							else:
+								check_if_else(directions == ":LD"):
+									Self.📺width_multiplier = 2 / 3
+									Self.📺height_multiplier = 2 / 3
+									Self.📺rotation_offset = 90
+									Self.📺offset_radius = 0.25
+									Self.📺offset_angle = 225
+									set_image(corner)
+								else:
+									check_if_else(directions == ":R"):
+										Self.📺width_multiplier = 1 / 3
+										Self.📺height_multiplier = 1 / 3
+										Self.📺rotation_offset = 0
+										Self.📺offset_radius = 2 / 6
+										Self.📺offset_angle = 0
+										set_image(square)
+									else:
+										check_if_else(directions == ":RU"):
+											Self.📺width_multiplier = 2 / 3
+											Self.📺height_multiplier = 2 / 3
+											Self.📺rotation_offset = -90
+											Self.📺offset_radius = 0.25
+											Self.📺offset_angle = 45
+											set_image(corner)
+										else:
+											check_if_else(directions == ":RUD"):
+												Self.📺width_multiplier = 1
+												Self.📺height_multiplier = 1
+												Self.📺rotation_offset = -90
+												Self.📺offset_radius = 0.17
+												Self.📺offset_angle = 0
+												set_image(t_2)
+											else:
+												check_if_else(directions == ":RD"):
+													Self.📺width_multiplier = 2 / 3
+													Self.📺height_multiplier = 2 / 3
+													Self.📺rotation_offset = 180
+													Self.📺offset_radius = 0.25
+													Self.📺offset_angle = -45
+													set_image(corner)
+												else:
+													check_if_else(directions == ":U"):
+														Self.📺width_multiplier = 1 / 3
+														Self.📺height_multiplier = 1 / 3
+														Self.📺rotation_offset = 0
+														Self.📺offset_radius = 2 / 6
+														Self.📺offset_angle = 90
+														set_image(square)
+													else:
+														check_if_else(directions == ":UD"):
+															Self.📺width_multiplier = 1 / 3
+															Self.📺height_multiplier = 1
+															Self.📺rotation_offset = 0
+															Self.📺offset_radius = 0
+															Self.📺offset_angle = 0
+															set_image(square)
+														else:
+															check_if_else(directions == ":D"):
+																Self.📺width_multiplier = 1 / 3
+																Self.📺height_multiplier = 1 / 3
+																Self.📺rotation_offset = 0
+																Self.📺offset_radius = 2 / 6
+																Self.📺offset_angle = -90
+																set_image(square)
+															else:
+																set_text(to: "UNKNOWN!", color: h(0,s:100,b:100))
+																show_popup(message:join("Unknown!", with: directions))
