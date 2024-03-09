@@ -9,17 +9,8 @@ Scene game:
 		📣check_board = "Check board for finished"
 		When game_starts:
 			check_if_else(Self.clone_index == 0):
-				check_once_if(Game.board_height * Game.board_width + 1 != length(Self.↩️empty_board)):
-					custom_block create_empty_level(width: Game.board_width, height: Game.board_height)
-				Self.board = Self.↩️empty_board
-				x = 0
-				repeat(times: Game.board_width):
-					y = 0
-					repeat(times: Game.board_height):
-						custom_block generate_tile_at(x: x, y: y, board: Self.board, width: Game.board_width, height: Game.board_height)
-						Self.board = Self.↩️board_with_generated_tile
-						increase(y, by: 1)
-					increase(x, by: 1)
+				custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: Game.current_level_index)
+				Self.board = Self.↩️generated_board
 				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
 				create_clones_of_this_object(times: Game.board_width * Game.board_height)
 				# show_popup(message: Self.board)

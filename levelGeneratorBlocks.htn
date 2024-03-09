@@ -1,3 +1,17 @@
+custom_block generate_level(width: 5, height: 5, seed: 0):
+	check_once_if(height * width + 1 != length(Self.↩️empty_board)):
+		custom_block create_empty_level(width: width, height: height)
+	board = Self.↩️empty_board
+	x = 0
+	repeat(times: width):
+		y = 0
+		repeat(times: height):
+			custom_block generate_tile_at(x: x, y: y, board: board, width: width, height: height)
+			board = Self.↩️board_with_generated_tile
+			increase(y, by: 1)
+		increase(x, by: 1)
+	Self.↩️generated_board = board
+
 custom_block create_empty_level(width: 0, height: 0):
 	result = ":"
 	repeat(times: width):
