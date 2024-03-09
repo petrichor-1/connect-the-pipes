@@ -4,4 +4,7 @@ text placeholder(text: "Level select goes here", x_position: 512, y_position: 38
 		Game.board_width = 5
 		Game.board_height = 5
 		Game.current_level_index = 0
+		Game.primary_color_hue = 35
+		Game.primary_color_saturation = 32
+		Game.primary_color_brightness = 90
 		change_scene(to: Scenes.game)

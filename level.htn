@@ -6,6 +6,7 @@ Import "./lists.htn"
 Scene game:
 	text level_generator(text: ""):
 		When game_starts:
+			set_background(color: h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
 			custom_block create_list(length_length: 2, content_index_length: 4)
 			Game.generated_levels = Self.↩️📊created_list
 			Game.generated_levels_list_offset = Game.current_level_index
@@ -39,12 +40,14 @@ Scene game:
 			broadcast_message(named: 📣play)
 		When i_get_a_message(📣play):
 			check_if_else(Self.clone_index == 0):
+				Game.is_loading = "true"
 				# show_popup(message: join("Looking for level with index ", with: Game.current_level_index))
 				custom_block wait_for_level_with(index: Game.current_level_index)
 				custom_block get_item_in(list: Game.generated_levels, at_index: Game.current_level_index - Game.generated_levels_list_offset)
 				Self.board = Self.↩️📊list_item
 				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
 				create_clones_of_this_object(times: Game.board_width * Game.board_height)
+				Game.is_loading = "false"
 				# show_popup(message: Self.board)
 			else:
 				Original_object.clone_index_offset = Self.clone_index
@@ -56,8 +59,8 @@ Scene game:
 			y = floor(clone_index / Game.board_width)
 			Self.y = y
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
-			origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 - Self.tile_size / 2
-			origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 - Self.tile_size / 2
+			origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 + Self.tile_size / 2
+			origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 + Self.tile_size / 2
 			custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
@@ -67,6 +70,7 @@ Scene game:
 			aspect_ratio = Self.height / Self.width
 			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
 			Self.times_tapped = random(0, to: 3)
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
 			repeat_forever:
 				set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.times_tapped * 90), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.times_tapped * 90))
 				set_angle(Self.📺rotation_offset + Self.times_tapped * 90)
@@ -85,6 +89,27 @@ Scene game:
 			else:
 				check_once_if(Self.times_tapped % Self.symmetry != 0):
 					Game.board_complete = "false"
+
+	square loading_screen:
+		When game_starts:
+			check_once_if(Self.total_clones == 1):
+				custom_block go_to_center:
+					set_position(to_x: Game.width / 2, y: Game.height / 2)
+				set_width(Game.width, height: Game.height)
+				create_a_clone_of_this_object
+			check_if_else(Self.clone_index == 0):
+				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
+			else:
+				set_color(h(Game.primary_color_hue, s: 5, b: 5))
+		When object_is_cloned:
+			set_text(to: "Loading level...", color: h(Game.primary_color_hue, s: 5, b: 5))
+			set_size(percent: 150)
+			set_origin(to_x: 8, y: 8)
+		When game_is_playing:
+			check_if_else(Game.is_loading == "true"):
+				set_invisibility(percent: 0)
+			else:
+				set_invisibility(percent: 100)
 
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)
