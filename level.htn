@@ -1,5 +1,6 @@
 Import "secretblocks.htn"
 Import "./winScreen.htn"
+Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
 Import "./lists.htn"
@@ -89,26 +90,6 @@ Scene game:
 			else:
 				check_once_if(Self.times_tapped % Self.symmetry != 0):
 					Game.board_complete = "false"
-
-	square loading_screen:
-		When game_starts:
-			check_once_if(Self.total_clones == 1):
-				set_position(to_x: Game.width / 2, y: Game.height / 2)
-				set_width(Game.width, height: Game.height)
-				create_a_clone_of_this_object
-			check_if_else(Self.clone_index == 0):
-				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
-			else:
-				set_color(h(Game.primary_color_hue, s: 5, b: 5))
-		When object_is_cloned:
-			set_text(to: "Loading level...", color: h(Game.primary_color_hue, s: 5, b: 5))
-			set_size(percent: 150)
-			set_origin(to_x: 8, y: 8)
-		When game_is_playing:
-			check_if_else(Game.is_loading == "true"):
-				set_invisibility(percent: 0)
-			else:
-				set_invisibility(percent: 100)
 
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)
