@@ -1,4 +1,5 @@
 Import "secretblocks.htn"
+Import "advanced.htn"
 Import "./winScreen.htn"
 Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
@@ -89,6 +90,9 @@ Scene game:
 			check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
 				increase(Self.times_tapped, by: 1)
 				increase(Game.total_taps, by: 1)
+				# Music taps so that the notes don't give away the solution
+				increase(Self.music_taps, by: 1)
+				play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
 				broadcast_message(named: 📣check_board)
 				wait(seconds: 0)
 				check_once_if(Game.board_complete == "true"):
