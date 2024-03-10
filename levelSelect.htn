@@ -103,6 +103,8 @@ text button_drawer(text: ""):
 	custom_rule 👆drawer
 
 square individual_level_select_buttons:
+	When game_is_playing:
+		individual_level_select_buttons.scroll = min(individual_level_select_buttons.scroll, 100100 - Game.height)
 	When game_starts:
 		check_once_if(Self.total_clones == 1):
 			set_position(to_x: 10000, y: 014)
