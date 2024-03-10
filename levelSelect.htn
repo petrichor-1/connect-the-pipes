@@ -168,3 +168,30 @@ text individual_level_select_button_labels(text: ""):
 		else:
 			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
 				increase(Self.index, by: -1 * Self.total_clones)
+
+text individual_level_select_button_score_labels(text: ""):
+	When game_starts:
+		check_once_if(Self.total_clones == 1):
+			set_position(to_x: 10000, y: 014)
+			create_clones_of_this_object(times: ceiling(ceiling(Game.height / 100 + 3) / 2) * 2)
+			destroy
+	When i_get_a_message(Game.📣🎨display_level_section):
+		Self.index = Self.clone_index - 1
+		x_position = 50
+		y_position = Game.height - 114 - 100 * Self.index
+		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
+		Self.should_scroll = "true"
+	When Self.should_scroll == "true":
+		custom_block get_taps_for_level(with_size: Game.board_width, at_index: Self.index)
+		check_if_else(Self.↩️taps < 100):
+			set_text(to: join(Self.↩️taps, with: " taps"), color: h(0, s: 0, b: 5))
+		else:
+			set_text(to: " ", color: "red")
+	When Self.should_scroll == "true":
+		y_position = Game.height - 64 - 100 * Self.index
+		set_origin(to_x: Game.width - 308 - Self.width, y: y_position + individual_level_select_buttons.scroll - Self.height / 2)
+		check_if_else(Self.y_position > Game.height + individual_level_select_buttons.height):
+			increase(Self.index, by: Self.total_clones)
+		else:
+			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
+				increase(Self.index, by: -1 * Self.total_clones)
