@@ -155,7 +155,11 @@ text individual_level_select_button_labels(text: ""):
 		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 		Self.should_scroll = "true"
 	When Self.should_scroll == "true":
-		set_text(to: Self.index, color: h(primary_color_hue, s: primary_color_saturation, b: primary_color_brightness))
+		lock = " "
+		custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+		check_once_if (Self.↩️📊list_item < Self.index):
+			lock = "🔒"
+		set_text(to: join(join(Game.board_width, with: join(" 𝑥", with: join(Game.board_height, with: join(" – ", with: Self.index)))), with: lock), color: h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
 	When Self.should_scroll == "true":
 		y_position = Game.height - 64 - 100 * Self.index
 		set_origin(to_x: 8, y: y_position + individual_level_select_buttons.scroll - Self.height / 2)
