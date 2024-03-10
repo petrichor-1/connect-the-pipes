@@ -28,6 +28,17 @@ custom_block get_item_in(list: "", at_index: 0):
 	# show_popup(message: join("Item start index: ", with: join(item_start_index, with: join(", length: ", with: item_length))))
 	# show_popup(message: join("Item at ", with: join(at_index, with: join(" is ", with: Self.↩️📊list_item))))
 
+custom_block set_item_in(list: "", at_index: 0, new_item: ""):
+	length_length = character_at_index(in: list, at: 0)
+	content_index_length = character_at_index(in: list, at: 1)
+	list_length = characters_between(in: list, between: 2, and: 2 + length_length)
+	Self.↩️📊set_list = join(characters_between(in: list, between: 0, and: 2 + length_length + 2 * content_index_length * at_index),  
+		with: join(characters_between(in: 10 ^ content_index_length + length(list) - 2 * content_index_length * list_length - 2 - length_length, between: 1, and: 1e100),
+		with: join(characters_between(in: 10 ^ content_index_length + length(new_item), between: 1, and: 1e100),
+		with: join(characters_between(in: list, between: 2 + length_length + 2 * content_index_length * at_index, and: 1e100),
+		with: new_item
+	))))
+
 custom_block get_length_of(list: ""):
 	length_length = character_at_index(in: list, at: 0)
 	Self.↩️📊list_length = characters_between(in: list, between: 2, and: 2 + length_length)

@@ -12,7 +12,7 @@ text data_checker(text: ""):
 		check_once_if(User.progress == 0):
 			custom_block create_list(length_length: 1, content_index_length: 5)
 			list = Self.↩️📊created_list
-			repeat(times: 6):
+			repeat(times: 7):
 				custom_block append_to(list: list, new_item: 0)
 				list = Self.↩️📊appended_list
 			User.progress = list

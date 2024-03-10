@@ -1,6 +1,7 @@
 Import "secretblocks.htn"
 Import "./animation.htn"
 Import "./tapsStorage.htn"
+Import "./lists.htn"
 
 Scene game:
 	square win_screen:
@@ -48,6 +49,19 @@ Scene game:
 				custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
 				bring_to_front
 				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+	text win_screen_new_levels_unlocked(text: "New levels unlocked!", resize_scale: 0.75):
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 72 - Self.height * 2)
+		When i_get_a_message(Game.📣Success):
+			custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+			check_once_if(Self.↩️📊list_item <= Game.current_level_index):
+				custom_block set_item_in(list: User.progress, at_index: Game.board_width - 4, new_item: Game.current_level_index + 1)
+				User.progress = Self.↩️📊set_list
+				check_once_if(Game.current_level_index == 50):
+					bring_to_front
+					custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
 
 	star win_screen_stars:
 		custom_rule hide_on_play
