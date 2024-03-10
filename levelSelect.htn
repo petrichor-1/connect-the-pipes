@@ -262,3 +262,9 @@ rounded_arrow level_select_back_button:
 		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position, from_y: Self.y_position, to_y: -1 * Self.height, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When is_tapped(Self):
 		broadcast_message(named: Game.📣display_level_section_selector)
+
+text level_select_sounds(text: ""):
+	When i_get_a_message(Game.📣display_level_section_selector):
+		start_sound("dash", wait: 0)
+	When i_get_a_message(Game.📣🎨display_level_section):
+		start_sound("dash", wait: 0)
