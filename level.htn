@@ -107,6 +107,15 @@ Scene game:
 			repeat_forever:
 				set_text(to: join("Taps: ", with: Game.total_taps), color: h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
 
+	rounded_arrow back_button:
+		When game_starts:
+			send_to_back
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness + 50))
+			set_angle(180)
+			set_origin(to_x: 8, y: 8)
+		When is_tapped(Self):
+			change_scene(to: Scenes.scene_1)
+
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)
 	check_once_if(Self.↩️📊list_length + Game.generated_levels_list_offset <= index):
