@@ -1,5 +1,6 @@
 Import "secretblocks.htn"
 Import "./animation.htn"
+Import "./tapsStorage.htn"
 
 Scene game:
 	square win_screen:
@@ -34,6 +35,19 @@ Scene game:
 			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 64)
 			bring_to_front
 			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+
+	text win_screen_new_highscore(text: "New highscore!", resize_scale: 0.75):
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 68 - Self.height)
+		When i_get_a_message(Game.📣Success):
+			custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
+			check_once_if (Game.total_taps < Self.↩️taps):
+				custom_block set_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index, taps: Game.total_taps)
+				custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
+				bring_to_front
+				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
 
 	star win_screen_stars:
 		custom_rule hide_on_play

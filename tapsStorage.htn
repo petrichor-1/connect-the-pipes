@@ -1,0 +1,21 @@
+custom_block setup_taps_storage_if_needed:
+	check_once_if(User.taps == 0):
+		custom_block generate_long_string_of(str: "----------", desired_length: 14000):
+			check_if_else(length(str) >= desired_length):
+				Self.↩️long_string = characters_between(in: str, between: 0, and: desired_length)
+			else:
+				custom_block generate_long_string_of(str: join(str, with: str), desired_length: desired_length)
+		User.taps = Self.↩️long_string
+
+custom_block get_taps_for_level(with_size: 0, at_index: 0):
+	index = (with_size - 4) * 1000 + at_index
+	taps = characters_between(in: User.taps, between: index * 2, and: index * 2 + 2)
+	# show_popup(message: join("At index ", with: join(index, with: join(", I found ", with: join(characters_between(in: User.taps, between: index * 2, and: index * 2 + 2), with: join(" (further context = ", with: join(characters_between(in: User.taps, between: index * 2 - 10, and: index * 2 + 2 + 10), with: ")")))))))
+	check_once_if(taps == "--"):
+		taps = 1e100
+	Self.↩️taps = taps
+
+custom_block set_taps_for_level(with_size: 0, at_index: 0, taps: 0):
+	taps = min(99, max(0, taps))
+	index = (with_size - 4) * 1000 + at_index
+	User.taps = join(characters_between(in: User.taps, between: 0, and: index * 2), with: join(characters_between(in: 100 + taps, between: 1, and: 3), with: characters_between(in: User.taps, between: index * 2 + 2, and: length(User.taps))))
