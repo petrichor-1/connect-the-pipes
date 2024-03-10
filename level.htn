@@ -102,6 +102,6 @@ Scene game:
 
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)
-	check_once_if(Self.↩️📊list_length + Game.generated_levels_list_offset <= current_level_index):
+	check_once_if(Self.↩️📊list_length + Game.generated_levels_list_offset <= index):
 		wait(seconds: 0)
 		custom_block wait_for_level_with(index: index)
