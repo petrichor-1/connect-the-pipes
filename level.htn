@@ -7,6 +7,7 @@ Import "./displayTiles.htn"
 Import "./lists.htn"
 Import "./animation.htn"
 
+
 Scene game:
 	text level_generator(text: ""):
 		When game_starts:
@@ -45,9 +46,10 @@ Scene game:
 						Game.generated_levels_list_offset = new_offset
 
 	text tiles(text: ""):
-		📣check_board = "Check board for finished"
+		Self.📣check_board = "Check board for finished"
 		Game.📣play = "play"
 		Game.📣Success = "Success!"
+		Self.📣first_hint = "just do the first possible hint"
 		When game_starts:
 			broadcast_message(named: Game.📣play)
 		When i_get_a_message(Game.📣play):
@@ -67,6 +69,7 @@ Scene game:
 				destroy
 		When object_is_cloned:
 			clone_index = Self.clone_index - Original_object.clone_index_offset - 1
+			Self.index = clone_index
 			x = clone_index % Game.board_width
 			Self.x = x
 			y = floor(clone_index / Game.board_width)
@@ -94,21 +97,49 @@ Scene game:
 			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
 		When is_tapped(Screen):
 			check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
-				increase(Self.times_tapped, by: 1)
-				increase(Game.total_taps, by: 1)
-				# Music taps so that the notes don't give away the solution
-				increase(Self.music_taps, by: 1)
-				play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
-				broadcast_message(named: 📣check_board)
-				wait(seconds: 0)
-				check_once_if(Game.board_complete == "true"):
-					broadcast_message(named: Game.📣Success)
-		When i_get_a_message(📣check_board):
+				custom_block rotate_self:
+					increase(Self.times_tapped, by: 1)
+					increase(Game.total_taps, by: 1)
+					# Music taps so that the notes don't give away the solution
+					increase(Self.music_taps, by: 1)
+					play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
+					broadcast_message(named: Self.📣check_board)
+					wait(seconds: 0)
+					check_once_if(Game.board_complete == "true"):
+						broadcast_message(named: Game.📣Success)
+		When i_get_a_message(Self.📣check_board):
 			check_if_else(Self.clone_index == 0):
 				Game.board_complete = "true"
 			else:
 				check_once_if(Self.times_tapped % Self.symmetry != 0):
 					Game.board_complete = "false"
+		When i_get_a_message(join(Game.📣provide_hint, with: "2")):
+			# Can't rebroadcast the same message that caused the broadcast block to run, for.... some reason
+			custom_block hint(msg: "3")
+		When i_get_a_message(join(Game.📣provide_hint, with: "3")):
+			# Can't rebroadcast the same message that caused the broadcast block to run, for.... some reason
+			custom_block hint(msg: "2")
+		When i_get_a_message(Game.📣provide_hint):
+			custom_block hint(msg: "2"):
+				check_if_else(Self.clone_index == 0):
+					check_if_else (Game.❓attempts < 10):
+						Game.❓index = random(1, to: Game.board_width * Game.board_height) - 1
+						increase(Game.❓attempts, by: 1)
+					else:
+						Game.❓chosen_hint = -1
+						broadcast_message(named: Self.📣first_hint)
+				else:
+					check_once_if(Game.❓index == Self.index and Game.❓attempts < 10):
+						check_if_else(Self.times_tapped % Self.symmetry != 0):
+							custom_block hint_myself:
+								custom_block summon_confetti
+								custom_block rotate_self
+						else:
+							broadcast_message(named: join(Game.📣provide_hint, with: msg))
+		When i_get_a_message(Self.📣first_hint):
+			check_once_if(Game.❓chosen_hint == -1 and Self.times_tapped % Self.symmetry != 0):
+				Game.❓chosen_hint = Self.index
+				custom_block hint_myself
 
 	text tap_count_display(text: "Taps: 0"):
 		When game_starts:
@@ -140,6 +171,66 @@ Scene game:
 			start_sound("dash", wait: 0)
 			custom_block ease_position_and_size(from_x: Game.width / 2, to_x: Game.width / 2, from_y: Game.height + Self.height, to_y: Game.height + 8 - Self.height / 2, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 			change_scene(to: Scenes.scene_1)
+	text hints(text: "Need a hint?", resize_scale: 0.8):
+		Game.📣advertise_hints = "Hint! Hint!"
+		Game.📣provide_hint = "hint time"
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_origin(to_x: Game.width - Self.width - 8, y: 8)
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness + 50))
+		When Game.total_taps > Game.board_width * Game.board_height * 3 and Self.total_clones == 1:
+			create_a_clone_of_this_object
+		When object_is_cloned:
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 2000)
+			repeat_forever:
+				custom_block ease_invisibility(from: 0, to: 10, milliseconds: 1000)
+				custom_block ease_invisibility(from: 10, to: 0, milliseconds: 1000)
+		When is_tapped(Screen):
+			check_once_if(Game.total_taps % (Game.board_width * Game.board_height * 3) == 0 and Self.clone_index > 0):
+				broadcast_message(named: Game.📣advertise_hints)
+				custom_block summon_confetti:
+					Game.🎉x = Self.x_position
+					Game.🎉y = Self.y_position
+					broadcast_message(named: Game.📣🎉spawn_confetti)
+		When i_get_a_message(Game.📣advertise_hints):
+			check_once_if(Self.clone_index > 0):
+				x = Self.x_position
+				y = Self.y_position
+				size = Self.size_as_a_percent
+				custom_block ease_position_and_size(from_x: x, to_x: x - 100, from_y: y, to_y: y + 50, from_size: size, to_size: size * 1.5, milliseconds: 1000)
+				turn(degrees: 10)
+				turn(degrees: -20)
+				turn(degrees: 10)
+				custom_block ease_position_and_size(from_x: Self.x_position, to_x: x, from_y: Self.y_position, to_y: y, from_size: Self.size_as_a_percent, to_size: size, milliseconds: 1000)
+		When Game.total_taps == 0 and Self.clone_index > 0:
+			destroy
+		When is_tapped(Self):
+			Game.❓attempts = 0
+			broadcast_message(named: Game.📣provide_hint)
+	chevron hint_confetti(resize_scale: 0.1):
+		Game.📣🎉spawn_confetti = "Spawn confetti"
+		When game_starts:
+			set_position(to_x: 1000000000, y: -1000000)
+		When i_get_a_message(Game.📣advertise_hints):
+			check_once_if(Self.clone_index == 0):
+				create_clones_of_this_object(times: random(10, to: 20))
+		When object_is_cloned:
+			send_to_back
+			set_invisibility(percent: random(0, to: 50))
+			set_size(percent: random(50, to: 200) * Self.size_as_a_percent / 100)
+			set_color(h(random(0, to: 360), s: Game.primary_color_saturation, b: Game.primary_color_brightness))
+			set_angle(random(0, to: 360))
+			angle = random(90, to: 180)
+			speed = random(10, to: 40)
+			horizontal_velocity = speed * cos(angle)
+			vertical_velocity = speed * sin(angle)
+			set_position(to_x: Game.🎉x, y: Game.🎉y)
+			repeat_forever:
+				increase(vertical_velocity, by: -1)
+				set_position(to_x: Self.x_position + horizontal_velocity, y: Self.y_position + vertical_velocity)
+				check_once_if(Self.y_position < -100):
+					destroy
+
 Scene scene_1:
 
 custom_block wait_for_level_with(index: 0):
