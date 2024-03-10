@@ -27,7 +27,7 @@ text data_checker(text: ""):
 text level_names(text: "4x4"):
 	Game.📣display_level_section_selector = "display main screen"
 	Game.📣🎨display_level_section = "display level section"
-	Game.level_section_colors = "035032090077028087138047082193027066318018066🐠"
+	Game.level_section_colors = "035032090077028087138047082193027066318018066251040043083067019🐠"
 	When game_starts:
 		set_background(color: h(0, s: 0, b: 90))
 		check_once_if(Self.total_clones == 1):
