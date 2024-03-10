@@ -144,6 +144,10 @@ square individual_level_select_buttons:
 			check_once_if (Self.↩️📊list_item >= Self.index):
 				Game.current_level_index = Self.index
 				change_scene(to: Scenes.game)
+	custom_rule individual_level_select_hide:
+		When i_get_a_message(Game.📣display_level_section_selector):
+			Self.should_scroll = "false"
+			custom_block ease_position_and_size(from_x: Self.x_position, to_x: Game.width + Self.x_position, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 
 text individual_level_select_button_labels(text: ""):
 	When game_starts:
@@ -171,6 +175,7 @@ text individual_level_select_button_labels(text: ""):
 		else:
 			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
 				increase(Self.index, by: -1 * Self.total_clones)
+	custom_rule individual_level_select_hide
 
 text individual_level_select_button_score_labels(text: ""):
 	When game_starts:
@@ -198,6 +203,7 @@ text individual_level_select_button_score_labels(text: ""):
 		else:
 			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
 				increase(Self.index, by: -1 * Self.total_clones)
+	custom_rule individual_level_select_hide
 
 star individual_level_select_button_stars:
 	When game_starts:
@@ -231,3 +237,18 @@ star individual_level_select_button_stars:
 		else:
 			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
 				increase(Self.index, by: -1 * individual_level_select_buttons.total_clones)
+	custom_rule individual_level_select_hide
+
+rounded_arrow level_select_back_button:
+	When game_starts:
+		check_once_if(Self.rotation == 0):
+			set_position(to_x: 014, y: -100000)
+			set_angle(180)
+			set_color(h(0, s: 0, b: 5))
+	When i_get_a_message(Game.📣🎨display_level_section):
+		custom_block ease_position_and_size(from_x: 8 + Self.width / 2, to_x: 8 + Self.width / 2, from_y: -1 * Self.height, to_y: 8 + Self.height / 2, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
+		bring_to_front
+	When i_get_a_message(Game.📣display_level_section_selector):
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position, from_y: Self.y_position, to_y: -1 * Self.height, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+	When is_tapped(Self):
+		broadcast_message(named: Game.📣display_level_section_selector)
