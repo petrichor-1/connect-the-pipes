@@ -51,7 +51,7 @@ text level_names(text: "4x4"):
 			set_size(percent: 100)
 		custom_block ease_position_and_size(from_x: -100, to_x: Game.width / 2, from_y: my_y, to_y: my_y, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When i_get_a_message(Game.📣🎨display_level_section):
-		custom_block ease_position_and_size(from_x: Self.x_position, to_x: -100, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: -200, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When is_tapped(Screen):
 		check_once_if(absolute_value(Game.last_touch_y - Self.y_position) < (Game.height - 128) / Self.total_clones / 2 and absolute_value(Self.x_position - Game.width / 2) < 10):
 			check_once_if(Self.amount_til_unlocked <= 0):
