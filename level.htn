@@ -8,6 +8,13 @@ Import "./lists.htn"
 Scene game:
 	text level_generator(text: ""):
 		When game_starts:
+			check_if_else(Self.clone_index == 0):
+				Game.generated_levels = 0
+				Game.generated_levels_list_offset = 0
+				create_a_clone_of_this_object
+			else:
+				destroy
+		When object_is_cloned:
 			set_background(color: h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
 			custom_block create_list(length_length: 2, content_index_length: 4)
 			Game.generated_levels = Self.↩️📊created_list
