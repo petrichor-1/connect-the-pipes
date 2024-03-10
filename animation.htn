@@ -6,6 +6,9 @@ custom_block ease_invisibility(from: 0, to: 100, milliseconds: 1000):
 custom_block ease_position_and_size(from_x: 2, to_x: 100, from_y: 2, to_y: 100, from_size: 0, to_size: 100, milliseconds: 500):
 	custom_block ease_position_and_size_quint(from_x: from_x, offset_x: to_x - from_x, from_y: from_y, offset_y: to_y - from_y, from_size: from_size, offset_size: to_size - from_size, start_time: User.time, duration_ms: milliseconds)
 
+custom_block ease_self_displayed_rotation(from: 0, to: 0, milliseconds: 250):
+	custom_block ease_self_displayed_rotation_quint(from: from, offset: to - from, start_time: User.time, duration_ms: milliseconds)
+
 custom_block ease_invisibility_sine(from: 0, offset: 0, start_time: 0, duration_ms: 1000):
 	progress = min(1, (User.time - start_time) / duration_ms)
 	set_invisibility(percent: progress * offset + from)
@@ -20,3 +23,11 @@ custom_block ease_position_and_size_quint(from_x: 0, offset_x: 0, from_y: 0, off
 	set_size(percent: t * offset_size + from_size)
 	check_once_if(progress < 1):
 		custom_block ease_position_and_size_quint(from_x: from_x, offset_x: offset_x, from_y: from_y, offset_y: offset_y, from_size: from_size, offset_size: offset_size , start_time: start_time, duration_ms: duration_ms)
+
+custom_block ease_self_displayed_rotation_quint(from: 0, offset: 0, start_time: 0, duration_ms: 0):
+	progress = min(1, (User.time - start_time) / duration_ms)
+	# Ew, conditional multiplication
+	t = (progress < 0.5) * (16 * progress ^ 5) + not(progress < 0.5) * subtract(1, (-2 * progress + 2) ^ 5 / 2)
+	Self.displayed_rotation = from + t * offset
+	check_once_if(progress < 1):
+		custom_block ease_self_displayed_rotation_quint(from: from, offset: offset, start_time: start_time, duration_ms: duration_ms)
