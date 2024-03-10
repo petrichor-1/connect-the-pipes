@@ -130,6 +130,7 @@ square individual_level_select_buttons:
 			set_color(h(0, s: 0, b: 95))
 		x_position = Game.width / 2
 		y_position = Game.height - 114 - 100 * Self.index
+		set_width(Game.width - 8, height: 100)
 		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 		set_width(Game.width - 8, height: 100)
 		Self.should_scroll = "true"
@@ -168,10 +169,10 @@ text individual_level_select_button_labels(text: ""):
 	When i_get_a_message(Game.📣🎨display_level_section):
 		Self.index = Self.clone_index - 1
 		x_position = 50
-		y_position = Game.height - 114 - 100 * Self.index
+		y_position = Game.height - 64 - 100 * Self.index
 		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 		Self.should_scroll = "true"
-	When Self.should_scroll == "true":
+	When game_is_playing:
 		lock = " "
 		custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
 		check_once_if (Self.↩️📊list_item < Self.index):
@@ -195,11 +196,11 @@ text individual_level_select_button_score_labels(text: ""):
 			destroy
 	When i_get_a_message(Game.📣🎨display_level_section):
 		Self.index = Self.clone_index - 1
-		x_position = 50
-		y_position = Game.height - 114 - 100 * Self.index
+		x_position = Game.width - 400
+		y_position = Game.height - 64 - 100 * Self.index
 		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 		Self.should_scroll = "true"
-	When Self.should_scroll == "true":
+	When game_is_playing:
 		custom_block get_taps_for_level(with_size: Game.board_width, at_index: Self.index)
 		check_if_else(Self.↩️taps < 100):
 			set_text(to: join(Self.↩️taps, with: " taps"), color: h(0, s: 0, b: 5))
@@ -224,8 +225,8 @@ star individual_level_select_button_stars:
 			destroy
 	When i_get_a_message(Game.📣🎨display_level_section):
 		Self.index = floor((Self.clone_index - 1) / 3)
-		x_position = 50
-		y_position = Game.height - 114 - 100 * Self.index
+		x_position = Game.width - 64 * add(1, +: (Self.clone_index - 1) % 3)
+		y_position = Game.height - 64 - 100 * Self.index
 		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 		Self.should_scroll = "true"
 	When Self.should_scroll == "true":
