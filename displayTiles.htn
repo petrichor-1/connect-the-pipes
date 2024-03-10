@@ -21,7 +21,7 @@ custom_block set_image_for(tile: "LRUD"):
 	else:
 		check_if_else(directions == ":LR"):
 			Self.📺width_multiplier = 1
-			Self.📺height_multiplier = 1 / 3
+			Self.📺height_multiplier = 0.35
 			Self.📺rotation_offset = 0
 			Self.📺offset_radius = 0
 			Self.📺offset_angle = 0
@@ -29,10 +29,10 @@ custom_block set_image_for(tile: "LRUD"):
 			set_image(square)
 		else:
 			check_if_else(directions == ":LRU"):
-				Self.📺width_multiplier = 1
-				Self.📺height_multiplier = 1
+				Self.📺width_multiplier = 1.06
+				Self.📺height_multiplier = 1.06
 				Self.📺rotation_offset = 0
-				Self.📺offset_radius = 0.17
+				Self.📺offset_radius = 0.1762152821180555
 				Self.📺offset_angle = 90
 				Self.symmetry = 4
 				set_image(t_2)
@@ -47,26 +47,26 @@ custom_block set_image_for(tile: "LRUD"):
 					set_image(x)
 				else:
 					check_if_else(directions == ":LRD"):
-						Self.📺width_multiplier = 1
-						Self.📺height_multiplier = -1
+						Self.📺width_multiplier = 1.06
+						Self.📺height_multiplier = -1.06
 						Self.📺rotation_offset = 0
-						Self.📺offset_radius = 0.17
+						Self.📺offset_radius = 0.1762152821180555
 						Self.📺offset_angle = -90
 						Self.symmetry = 4
 						set_image(t_2)
 					else:
 						check_if_else(directions == ":LU"):
-							Self.📺width_multiplier = 2 / 3
-							Self.📺height_multiplier = 2 / 3
+							Self.📺width_multiplier = 0.69
+							Self.📺height_multiplier = 0.69
 							Self.📺rotation_offset = 0
-							Self.📺offset_radius = 0.25
+							Self.📺offset_radius = 0.24
 							Self.📺offset_angle = 135
 							Self.symmetry = 4
 							set_image(corner)
 						else:
 							check_if_else(directions == ":LUD"):
-								Self.📺width_multiplier = 1
-								Self.📺height_multiplier = 1
+								Self.📺width_multiplier = 1.06
+								Self.📺height_multiplier = 1.06
 								Self.📺rotation_offset = 90
 								Self.📺offset_radius = 0.169
 								Self.📺offset_angle = 180
@@ -74,17 +74,17 @@ custom_block set_image_for(tile: "LRUD"):
 								set_image(t_2)
 							else:
 								check_if_else(directions == ":LD"):
-									Self.📺width_multiplier = 2 / 3
-									Self.📺height_multiplier = 2 / 3
+									Self.📺width_multiplier = 0.69
+									Self.📺height_multiplier = 0.69
 									Self.📺rotation_offset = 90
-									Self.📺offset_radius = 0.25
+									Self.📺offset_radius = 0.24
 									Self.📺offset_angle = 225
 									Self.symmetry = 4
 									set_image(corner)
 								else:
 									check_if_else(directions == ":R"):
-										Self.📺width_multiplier = 1 / 3
-										Self.📺height_multiplier = 1 / 3
+										Self.📺width_multiplier = 0.35
+										Self.📺height_multiplier = 0.35
 										Self.📺rotation_offset = 0
 										Self.📺offset_radius = 2 / 6
 										Self.📺offset_angle = 0
@@ -92,35 +92,35 @@ custom_block set_image_for(tile: "LRUD"):
 										set_image(square)
 									else:
 										check_if_else(directions == ":RU"):
-											Self.📺width_multiplier = 2 / 3
-											Self.📺height_multiplier = 2 / 3
+											Self.📺width_multiplier = 0.69
+											Self.📺height_multiplier = 0.69
 											Self.📺rotation_offset = -90
-											Self.📺offset_radius = 0.25
+											Self.📺offset_radius = 0.24
 											Self.📺offset_angle = 45
 											Self.symmetry = 4
 											set_image(corner)
 										else:
 											check_if_else(directions == ":RUD"):
-												Self.📺width_multiplier = 1
-												Self.📺height_multiplier = 1
+												Self.📺width_multiplier = 1.06
+												Self.📺height_multiplier = 1.06
 												Self.📺rotation_offset = -90
-												Self.📺offset_radius = 0.17
+												Self.📺offset_radius = 0.1762152821180555
 												Self.📺offset_angle = 0
 												Self.symmetry = 4
 												set_image(t_2)
 											else:
 												check_if_else(directions == ":RD"):
-													Self.📺width_multiplier = 2 / 3
-													Self.📺height_multiplier = 2 / 3
+													Self.📺width_multiplier = 0.69
+													Self.📺height_multiplier = 0.69
 													Self.📺rotation_offset = 180
-													Self.📺offset_radius = 0.25
+													Self.📺offset_radius = 0.24
 													Self.📺offset_angle = -45
 													Self.symmetry = 4
 													set_image(corner)
 												else:
 													check_if_else(directions == ":U"):
-														Self.📺width_multiplier = 1 / 3
-														Self.📺height_multiplier = 1 / 3
+														Self.📺width_multiplier = 0.35
+														Self.📺height_multiplier = 0.35
 														Self.📺rotation_offset = 0
 														Self.📺offset_radius = 2 / 6
 														Self.📺offset_angle = 90
@@ -128,7 +128,7 @@ custom_block set_image_for(tile: "LRUD"):
 														set_image(square)
 													else:
 														check_if_else(directions == ":UD"):
-															Self.📺width_multiplier = 1 / 3
+															Self.📺width_multiplier = 0.35
 															Self.📺height_multiplier = 1
 															Self.📺rotation_offset = 0
 															Self.📺offset_radius = 0
@@ -137,8 +137,8 @@ custom_block set_image_for(tile: "LRUD"):
 															set_image(square)
 														else:
 															check_if_else(directions == ":D"):
-																Self.📺width_multiplier = 1 / 3
-																Self.📺height_multiplier = 1 / 3
+																Self.📺width_multiplier = 0.35
+																Self.📺height_multiplier = 0.35
 																Self.📺rotation_offset = 0
 																Self.📺offset_radius = 2 / 6
 																Self.📺offset_angle = -90
