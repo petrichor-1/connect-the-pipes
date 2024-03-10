@@ -109,6 +109,8 @@ square individual_level_select_buttons:
 			destroy
 	When i_get_a_message(Game.📣🎨display_level_section):
 		Self.index = Self.clone_index - 1
+		custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+		individual_level_select_buttons.scroll = 100 * max(0, Self.↩️📊list_item - 3)
 		check_if_else(Self.index % 2 == 0):
 			set_color(h(0, s: 0, b: 100))
 		else:
