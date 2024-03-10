@@ -115,7 +115,7 @@ Scene game:
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position - 10, y: Self.y_position + 22)
+				set_position(to_x: Self.x_position - 10, y: Self.y_position + 0)
 				set_size(percent: 300)
 			else:
 				set_image(square)
@@ -137,10 +137,11 @@ Scene game:
 			check_once_if(Self.total_clones == 1):
 				create_clones_of_this_object(times: 2)
 				set_size(percent: 200)
+				set_position(to_x: Self.x_position, y: Self.y_position - 10)
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position, y: Self.y_position + 22)
+				set_position(to_x: Self.x_position, y: Self.y_position + 0)
 				set_size(percent: 300)
 			else:
 				set_image(square)
