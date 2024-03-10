@@ -1,6 +1,6 @@
 Import "secretblocks.htn"
 Import "advanced.htn"
-Import "./level.htn"
+Import "./play.htn"
 Import "./animation.htn"
 Import "./lists.htn"
 Import "./drawTableButtonPress.htn"
@@ -113,6 +113,7 @@ text button_drawer(text: ""):
 	custom_rule 👆drawer
 
 square individual_level_select_buttons:
+	Game.📣play_level = "Play"
 	When game_is_playing:
 		individual_level_select_buttons.scroll = min(individual_level_select_buttons.scroll, 100100 - Game.height)
 	When game_starts:
@@ -154,7 +155,7 @@ square individual_level_select_buttons:
 			custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
 			check_once_if (Self.↩️📊list_item >= Self.index):
 				Game.current_level_index = Self.index
-				change_scene(to: Scenes.game)
+				broadcast_message(named: Game.📣play_level)
 	custom_rule individual_level_select_hide:
 		When i_get_a_message(Game.📣display_level_section_selector):
 			Self.should_scroll = "false"
