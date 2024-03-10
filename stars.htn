@@ -1,0 +1,16 @@
+custom_block compute_stars(width: 0, height: 0, taps: 0):
+	# Technically this means that depending on rng a 3 star finish may be impossible,
+	#     but that is not consistent between plays so it is acceptable
+	three_star_taps = width * height * 2
+	two_star_taps = three_star_taps + width * height / 2
+	one_star_taps = two_star_taps + width * height
+	stars = 0
+	check_if_else(taps <= three_star_taps):
+		stars = 3
+	else:
+		check_if_else(taps <= two_star_taps):
+			stars = 2
+		else:
+			check_once_if(taps <= one_star_taps):
+				stars = 1
+	Self.↩️stars = stars

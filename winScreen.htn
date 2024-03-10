@@ -2,6 +2,7 @@ Import "secretblocks.htn"
 Import "./animation.htn"
 Import "./tapsStorage.htn"
 Import "./lists.htn"
+Import "./stars.htn"
 
 Scene game:
 	square win_screen:
@@ -70,20 +71,8 @@ Scene game:
 			check_once_if(Self.total_clones == 1):
 				create_clones_of_this_object(times: 2)
 		When i_get_a_message(Game.📣show_stars):
-			# Technically this means that depending on rng a 3 star finish may be impossible,
-			#     but that is not consistent between plays so it is acceptable
-			three_star_taps = Game.board_width * Game.board_height * 2
-			two_star_taps = three_star_taps + Game.board_width * Game.board_height / 2
-			one_star_taps = two_star_taps + Game.board_width * Game.board_height
-			stars = 0
-			check_if_else(Game.total_taps <= three_star_taps):
-				stars = 3
-			else:
-				check_if_else(Game.total_taps <= two_star_taps):
-					stars = 2
-				else:
-					check_once_if(Game.total_taps <= one_star_taps):
-						stars = 1
+			custom_block compute_stars(width: Game.board_width, height: Game.board_height, taps: Game.total_taps)
+			stars = Self.↩️stars
 			star_offset = Self.clone_index - 1
 			final_size = 100 - absolute_value(star_offset) * 10
 			final_x = Game.width / 2 + star_offset * 128
