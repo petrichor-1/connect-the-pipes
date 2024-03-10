@@ -1,10 +1,160 @@
+Import "secretblocks.htn"
+Import "advanced.htn"
 Import "./level.htn"
-text placeholder(text: "Level select goes here", x_position: 512, y_position: 384, resize_scale: 2):
+Import "./animation.htn"
+Import "./lists.htn"
+Import "./drawTableButtonPress.htn"
+
+text data_checker(text: ""):
+	When game_starts:
+		# If there is no user data, create it ASAP
+		check_once_if(User.progress == 0):
+			custom_block create_list(length_length: 1, content_index_length: 5)
+			list = Self.↩️📊created_list
+			repeat(times: 6):
+				custom_block append_to(list: list, new_item: 0)
+				list = Self.↩️📊appended_list
+			User.progress = list
+		# To prevent it from getting too big, rebuild it whenever I get the time
+		old_list = User.progress
+		custom_block rebuild(list: User.progress)
+		check_once_if(User.progress == old_list):
+			User.progress = Self.↩️📊rebuilt_list
+		destroy
+text level_names(text: "4x4"):
+	Game.📣display_level_section_selector = "display main screen"
+	Game.📣🎨display_level_section = "display level section"
+	Game.level_section_colors = "035032090077028087138047082193027066318018066🐠"
+	When game_starts:
+		set_background(color: h(0, s: 0, b: 90))
+		check_once_if(Self.total_clones == 1):
+			create_clones_of_this_object(times: 6)
+			broadcast_message(named: Game.📣display_level_section_selector)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		set_position(to_x: -100000, y: 014)
+		my_y = Game.height - 96 - Self.clone_index * (Game.height - 128) / Self.total_clones
+		my_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
+		my_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
+		my_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
+		set_text(to: join(Self.clone_index + 4, with: join("x", with: Self.clone_index + 4)), color: h(my_hue, s: my_saturation, b: my_brightness))
+		custom_block ease_position_and_size(from_x: -100, to_x: Game.width / 2, from_y: my_y, to_y: my_y, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+	When i_get_a_message(Game.📣🎨display_level_section):
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: -100, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When is_tapped(Screen):
-		Game.board_width = 5
-		Game.board_height = 5
-		Game.current_level_index = 0
-		Game.primary_color_hue = 35
-		Game.primary_color_saturation = 32
-		Game.primary_color_brightness = 90
-		change_scene(to: Scenes.game)
+		check_once_if(absolute_value(Game.last_touch_y - Self.y_position) < (Game.height - 128) / Self.total_clones / 2 and absolute_value(Self.x_position - Game.width / 2) < 10):
+			Game.👆y_position = Self.y_position
+			Game.👆height = (Game.height - 128) / Self.total_clones
+			broadcast_message(named: Game.📣👆draw)
+			Game.🎨level_section_index = Self.clone_index
+			Game.level_section_name = Self.text
+			Game.primary_color_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
+			Game.primary_color_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
+			Game.primary_color_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
+			Game.board_width = 4 + Self.clone_index
+			Game.board_height = Game.board_width
+			broadcast_message(named: Game.📣🎨display_level_section)
+			wait_milliseconds(100)
+			clear
+
+text level_section_lines(text: ""):
+	When i_get_a_message(Game.📣display_level_section_selector):
+		check_if_else(Self.clone_index == 0):
+			create_clones_of_this_object(times: level_names.total_clones)
+		else:
+			destroy
+	When object_is_cloned:
+		my_y = Game.height - 96 - (Self.clone_index - 1) % level_names.total_clones * (Game.height - 128) / level_names.total_clones
+		my_hue = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 3)
+		my_saturation = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 3, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 6)
+		my_brightness = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 6, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 9)
+		set_position(to_x: 4, y: my_y + (Game.height - 128) / level_names.total_clones / 2)
+		draw_a_trail(color: h(my_hue, s: my_saturation, b: my_brightness), width: 1):
+			set_position(to_x: Game.width - 4, y: Self.y_position)
+		destroy
+
+text level_section_progress(text: ""):
+	When i_get_a_message(Game.📣display_level_section_selector):
+		check_if_else(Self.clone_index == 0):
+			create_clones_of_this_object(times: level_names.total_clones)
+		else:
+			destroy
+	When object_is_cloned:
+		custom_block wait_for_user_data:
+			check_once_if(User.progress == 0):
+				wait(seconds: 0)
+				custom_block wait_for_user_data
+		custom_block get_item_in(list: User.progress, at_index: (Self.clone_index - 1) % level_names.total_clones)
+		progress = Self.↩️📊list_item
+		my_y = Game.height - 96 - (Self.clone_index - 1) % level_names.total_clones * (Game.height - 128) / level_names.total_clones
+		my_hue = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 3)
+		my_saturation = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 3, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 6)
+		my_brightness = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 6, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 9)
+		set_position(to_x: 4, y: my_y)
+		set_trail_cap(to: "butt")
+		set_trail_opacity(percent: 75)
+		draw_a_trail(color: h(my_hue, s: my_saturation, b: my_brightness), width: (Game.height - 128) / level_names.total_clones):
+			set_position(to_x: progress * (Game.width - 4) / 1000, y: Self.y_position)
+		destroy
+
+text button_drawer(text: ""):
+	custom_rule 👆drawer
+
+square individual_level_select_buttons:
+	When game_starts:
+		check_once_if(Self.total_clones == 1):
+			set_position(to_x: 10000, y: 014)
+			create_clones_of_this_object(times: ceiling(ceiling(Game.height / 100 + 3) / 2) * 2)
+			destroy
+	When i_get_a_message(Game.📣🎨display_level_section):
+		Self.index = Self.clone_index - 1
+		check_if_else(Self.index % 2 == 0):
+			set_color(h(0, s: 0, b: 100))
+		else:
+			set_color(h(0, s: 0, b: 95))
+		x_position = Game.width / 2
+		y_position = Game.height - 114 - 100 * Self.index
+		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
+		set_width(Game.width - 8, height: 100)
+		Self.should_scroll = "true"
+	When Self.should_scroll == "true":
+		y_position = Game.height - 64 - 100 * Self.index
+		set_position(to_x: Self.x_position, y: y_position + individual_level_select_buttons.scroll)
+		check_if_else(Self.y_position > Game.height + Self.height):
+			increase(Self.index, by: Self.total_clones)
+		else:
+			check_once_if(Self.y_position < -1 * Self.height):
+				increase(Self.index, by: -1 * Self.total_clones)
+	When is_tapped(Self):
+		Self.previous_touch_y = Game.last_touch_y
+		Self.tap_time = User.time
+	When is_pressed(Self):
+		increase(individual_level_select_buttons.scroll, by: Game.last_touch_y - Self.previous_touch_y)
+		Self.previous_touch_y = Game.last_touch_y
+		individual_level_select_buttons.scroll = max(0, individual_level_select_buttons.scroll)
+	When touch_ends:
+		check_once_if(User.time - Self.tap_time < 500):
+			Game.current_level_index = Self.index
+			change_scene(to: Scenes.game)
+
+text individual_level_select_button_labels(text: ""):
+	When game_starts:
+		check_once_if(Self.total_clones == 1):
+			set_position(to_x: 10000, y: 014)
+			create_clones_of_this_object(times: ceiling(ceiling(Game.height / 100 + 3) / 2) * 2)
+			destroy
+	When i_get_a_message(Game.📣🎨display_level_section):
+		Self.index = Self.clone_index - 1
+		x_position = 50
+		y_position = Game.height - 114 - 100 * Self.index
+		custom_block ease_position_and_size(from_x: (Game.width * 0.9) + 100 + x_position, to_x: x_position, from_y: y_position, to_y: y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
+		Self.should_scroll = "true"
+	When Self.should_scroll == "true":
+		set_text(to: Self.index, color: h(primary_color_hue, s: primary_color_saturation, b: primary_color_brightness))
+	When Self.should_scroll == "true":
+		y_position = Game.height - 64 - 100 * Self.index
+		set_origin(to_x: 8, y: y_position + individual_level_select_buttons.scroll - Self.height / 2)
+		check_if_else(Self.y_position > Game.height + individual_level_select_buttons.height):
+			increase(Self.index, by: Self.total_clones)
+		else:
+			check_once_if(Self.y_position < -1 * individual_level_select_buttons.height):
+				increase(Self.index, by: -1 * Self.total_clones)

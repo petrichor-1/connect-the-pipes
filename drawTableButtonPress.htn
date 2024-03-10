@@ -1,0 +1,9 @@
+Import "advanced.htn"
+
+custom_rule 👆drawer:
+	Game.📣👆draw = join("Draw ", with: Self.name)
+	When i_get_a_message(Game.📣👆draw):
+		set_position(to_x: 4, y: Game.👆y_position)
+		set_trail_cap(to: "butt")
+		draw_a_trail(color: h(0, s: 0, b: 80), width: Game.👆height):
+			set_position(to_x: Game.width - 4, y: Self.y_position)
