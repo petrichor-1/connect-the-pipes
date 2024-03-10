@@ -137,8 +137,10 @@ square individual_level_select_buttons:
 		individual_level_select_buttons.scroll = max(0, individual_level_select_buttons.scroll)
 	When touch_ends:
 		check_once_if(User.time - Self.tap_time < 500):
-			Game.current_level_index = Self.index
-			change_scene(to: Scenes.game)
+			custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+			check_once_if (Self.↩️📊list_item >= Self.index):
+				Game.current_level_index = Self.index
+				change_scene(to: Scenes.game)
 
 text individual_level_select_button_labels(text: ""):
 	When game_starts:
