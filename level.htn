@@ -72,21 +72,22 @@ Scene game:
 			y = floor(clone_index / Game.board_width)
 			Self.y = y
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
-			origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 + Self.tile_size / 2
-			origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 + Self.tile_size / 2
+			Self.origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 + Self.tile_size / 2
+			Self.origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 + Self.tile_size / 2
 			custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
-			Self.center_x_position = origin_position_x + Self.tile_size * x
-			Self.center_y_position = origin_position_y + Self.tile_size * y
 			wait(seconds: 0)
 			aspect_ratio = Self.height / Self.width
 			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
-			Self.times_tapped = random(0, to: 3)
 			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
+		When object_is_cloned:
+			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
+			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
+			Self.times_tapped = random(0, to: 3)
 			Self.displayed_rotation = Self.times_tapped * 90
-			repeat_forever:
-				set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
+		When Self.clone_index > 0:
+			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
 		When Self.clone_index > 0:
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
 		When Self.displayed_rotation != Self.times_tapped * 90:
