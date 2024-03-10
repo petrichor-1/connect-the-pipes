@@ -186,7 +186,7 @@ text individual_level_select_button_score_labels(text: ""):
 		check_if_else(Self.↩️taps < 100):
 			set_text(to: join(Self.↩️taps, with: " taps"), color: h(0, s: 0, b: 5))
 		else:
-			set_text(to: " ", color: "red")
+			set_text(to: "Not played", color: h(0, s: 0, b: 5))
 	When Self.should_scroll == "true":
 		y_position = Game.height - 64 - 100 * Self.index
 		set_origin(to_x: Game.width - 308 - Self.width, y: y_position + individual_level_select_buttons.scroll - Self.height / 2)
