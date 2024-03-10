@@ -27,6 +27,17 @@ Scene game:
 			wait(seconds: 1.5)
 			broadcast_message(named: Game.📣show_win_buttons)
 
+	text win_screen_level_display(text: "Level 4x4 – 0", resize_scale: 0.8):
+		custom_rule hide_on_play
+		When game_starts:
+			set_invisibility(percent: 100)
+		When i_get_a_message(Game.📣Success):
+			set_text(to: join("Level ", with: join(Game.board_width, with: join("x", with: join(Game.board_height, with: join(" – ", with: Game.current_level_index))))), color: h(Game.primary_color_hue, s: 5, b: 5))
+			wait(seconds: 0)
+			set_position(to_x: Game.width / 2, y: Game.height - 8 - 0.5 * Self.height)
+			bring_to_front
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+			
 	text win_screen_tap_count_display(text: "0 taps", resize_scale: 0.75):
 		custom_rule hide_on_play
 		When game_starts:
