@@ -3,15 +3,16 @@ custom_block generate_level(width: 5, height: 5, seed: 0):
 	check_once_if(height * width + 1 != length(Self.↩️empty_board)):
 		custom_block create_empty_level(width: width, height: height)
 	board = Self.↩️empty_board
-	x = 0
+	Self.↩️board_with_generated_tile = board
+	x = -1
 	repeat(times: width):
-		y = 0
-		repeat(times: height):
-			custom_block generate_tile_at(x: x, y: y, board: board, width: width, height: height)
-			board = Self.↩️board_with_generated_tile
-			increase(y, by: 1)
+		y = -1
 		increase(x, by: 1)
-	Self.↩️generated_board = board
+		repeat(times: height):
+			increase(y, by: 1)
+			board = Self.↩️board_with_generated_tile
+			custom_block generate_tile_at(x: x, y: y, board: board, width: width, height: height)
+	Self.↩️generated_board = Self.↩️board_with_generated_tile
 
 custom_block create_empty_level(width: 0, height: 0):
 	result = ":"
@@ -59,25 +60,16 @@ custom_block generate_tile_at(x: 0, y: 0, board: "", width: 5, height: 5):
 				forbidden_connections = join("D", with: forbidden_connections)
 	else:
 		forbidden_connections = join("D", with: forbidden_connections)
-	random_direction_options = ":"
 	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
-	check_once_if(not(all_used_or_forbidden_directions MATCHES "R")):
-		random_direction_options = join("R", with: random_direction_options)
-	check_once_if(not(all_used_or_forbidden_directions MATCHES "L")):
-		random_direction_options = join("L", with: random_direction_options)
-	check_once_if(not(all_used_or_forbidden_directions MATCHES "U")):
-		random_direction_options = join("U", with: random_direction_options)
-	check_once_if(not(all_used_or_forbidden_directions MATCHES "D")):
-		random_direction_options = join("D", with: random_direction_options)
-	check_once_if(length(random_direction_options) > 1):
-		custom_block get_random_number(between: 0, and_max: length(random_direction_options) - 2)
+	custom_block get_random_direction_options(forbidden: all_used_or_forbidden_directions)
+	check_once_if(length(Self.↩️random_direction_options) > 1):
+		custom_block get_random_number(between: 0, and_max: length(Self.↩️random_direction_options) - 2)
 		index = Self.↩️random_number
-		custom_block get_random_number(between: 1, and_max: length(random_direction_options) - 1 - index)
+		custom_block get_random_number(between: 1, and_max: length(Self.↩️random_direction_options) - 1 - index)
 		repeat(times: Self.↩️random_number):
-			connections = join(character_at_index(in: random_direction_options, at: index), with: connections)
+			connections = join(character_at_index(in: Self.↩️random_direction_options, at: index), with: connections)
 			increase(index, by: 1)
-	repeat(times: 5 - length(connections)):
-		connections = join("|", with: connections)
+	connections = join(characters_between(in: 10 ^ subtract(5, length(connections)), between: 1, and: 100), with: connections)
 	generated_tile = characters_between(in: connections, between: 0, and: 4)
 	index = (y * width + x) * 4
 	Self.↩️board_with_generated_tile = join(characters_between(in: board, between: 0, and: index), with: join(generated_tile, with: characters_between(in: board, between: index + 4, and: length(board))))
@@ -87,12 +79,10 @@ custom_block get_tile_at(x: 0, y: 0, board: "", width: 0):
 	Self.↩️tile = characters_between(in: board, between: index, and: index + 4)
 
 custom_block get_connection_status_to(direction: "L", x: 0, y: 0, board: "", width: 0):
-	index = (y * width + x) * 4
-	tile = characters_between(in: board, between: index, and: index + 4)
-	check_if_else(tile == "????"):
+	check_if_else(characters_between(in: board, between: (y * width + x) * 4, and: (y * width + x) * 4 + 4) == "????"):
 		Self.↩️connection_status = "Undefined"
 	else:
-		check_if_else(tile MATCHES direction):
+		check_if_else(characters_between(in: board, between: (y * width + x) * 4, and: (y * width + x) * 4 + 4) MATCHES direction):
 			# check_once_if(direction == "R" and x == 1 and y == 4):
 			# 	show_popup(message: tile)
 			Self.↩️connection_status = "True"
@@ -104,8 +94,32 @@ custom_block get_random_number(between: 0, and_max: 10):
 	m = 2 ^ 31
 	a = 1103515245
 	c = 12345
-	repeat(times: 5):
-		Self.random_seed = (a * Self.random_seed + c) % m
+	Self.random_seed = (a * Self.random_seed + c) % m
+	Self.random_seed = (a * Self.random_seed + c) % m
+	Self.random_seed = (a * Self.random_seed + c) % m
+	Self.random_seed = (a * Self.random_seed + c) % m
+	Self.random_seed = (a * Self.random_seed + c) % m
 	Self.↩️random_number = floor(Self.random_seed / 2 ^ 16) % (and_max - between + 1) + between
 	# show_popup(message: join("get_random_number(between: ", with: join(between, with: join(", and_max: ", with: join(and_max, with: join(") = ", with: join(Self.↩️random_number, with: join("
 	# Top bits = ", with: floor(Self.random_seed / 2 ^ 16)))))))))
+
+custom_block get_random_direction_options(forbidden: ""):
+	check_if_else(not(forbidden MATCHES "R")):
+		custom_block get_random_direction_options_L(forbidden: forbidden, result: "R:")
+	else:
+		custom_block get_random_direction_options_L(forbidden: forbidden, result: ":")
+custom_block get_random_direction_options_L(forbidden: "", result: ":"):
+	check_if_else(not(forbidden MATCHES "L")):
+		custom_block get_random_direction_options_U(forbidden: forbidden, result: join("L", with: result))
+	else:
+		custom_block get_random_direction_options_U(forbidden: forbidden, result: result)
+custom_block get_random_direction_options_U(forbidden: "", result: ":"):
+	check_if_else(not(forbidden MATCHES "U")):
+		custom_block get_random_direction_options_D(forbidden: forbidden, result: join("U", with: result))
+	else:
+		custom_block get_random_direction_options_D(forbidden: forbidden, result: result)
+custom_block get_random_direction_options_D(forbidden: "", result: ":"):
+	check_if_else(not(forbidden MATCHES "D")):
+		Self.↩️random_direction_options = join("L", with: result)
+	else:
+		Self.↩️random_direction_options = result
