@@ -5,6 +5,7 @@ Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
 Import "./lists.htn"
+Import "./animation.htn"
 
 Scene game:
 	text level_generator(text: ""):
@@ -118,7 +119,23 @@ Scene game:
 			set_angle(180)
 			set_origin(to_x: 8, y: 8)
 		When is_tapped(Self):
+			broadcast_message(named: Game.📣back_to_level_select)
+
+	square unplay_cover:
+		Game.📣back_to_level_select = "unplay"
+		When game_starts:
+			# Slight delay to give loading screen some time on returning to this screen
+			repeat(times: 5):
+				wait(seconds: 0)
+			set_position(to_x: 014, y: 100000)
+			set_width(Game.width * 2, height: Game.height * 2)
+		When i_get_a_message(Game.📣back_to_level_select):
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
+			bring_to_front
+			start_sound("dash", wait: 0)
+			custom_block ease_position_and_size(from_x: Game.width / 2, to_x: Game.width / 2, from_y: Game.height + Self.height, to_y: Game.height + 8 - Self.height / 2, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 			change_scene(to: Scenes.scene_1)
+Scene scene_1:
 
 custom_block wait_for_level_with(index: 0):
 	custom_block get_length_of(list: Game.generated_levels)

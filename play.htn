@@ -7,7 +7,6 @@ square play_cover:
 			set_position(to_x: 014, y: -100000)
 			set_width(Game.width * 2, height: Game.height * 2)
 		else:
-			start_sound("dash", wait: 0)
 			custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position, from_y: Self.y_position, to_y: -1 * Self.height, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 500)
 	When i_get_a_message(Game.📣play_level):
 		set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))

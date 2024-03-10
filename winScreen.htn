@@ -134,7 +134,7 @@ Scene game:
 			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
 		When is_tapped(Self):
 			check_if_else(Game.current_level_index >= 1000):
-				change_scene(to: Scenes.scene_1)
+				broadcast_message(named: Game.📣back_to_level_select)
 			else:
 				increase(Game.current_level_index, by: 1)
 				broadcast_message(named: Game.📣play)
@@ -186,9 +186,8 @@ Scene game:
 			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
 			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
 		When is_tapped(Self):
-			change_scene(to: Scenes.scene_1)
+			broadcast_message(named: Game.📣back_to_level_select)
 
-Scene scene_1:
 custom_rule hide_on_play:
 	When i_get_a_message(Game.📣play):
 		set_invisibility(percent: 100)
