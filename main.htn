@@ -7,7 +7,7 @@ Import "./levelSelect.htn"
 # This helps with buttons
 Import "./circleSizeDetection.htn"
 
-Import "./lists.htn"
+Import "helpers/lists.htn"
 
 text data_checker(text: ""):
 	When game_starts:

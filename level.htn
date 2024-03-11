@@ -4,7 +4,7 @@ Import "./winScreen.htn"
 Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
-Import "./lists.htn"
+Import "helpers/lists.htn"
 Import "helpers/animation.htn"
 
 
