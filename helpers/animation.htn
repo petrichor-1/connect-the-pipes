@@ -9,6 +9,12 @@ custom_block ease_position_and_size(from_x: 2, to_x: 100, from_y: 2, to_y: 100, 
 custom_block ease_self_displayed_rotation(from: 0, to: 0, milliseconds: 250):
 	custom_block ease_self_displayed_rotation_quint(from: from, offset: to - from, start_time: User.time, duration_ms: milliseconds)
 
+custom_block ease_color(from_h: 0, to_h: 0, from_s: 0, to_s: 0, from_b: 0, to_b: 0, milliseconds: 100):
+	custom_block ease_color_sine(from_h: from_h, offset_h: to_h - from_h, from_s: from_s, offset_s: to_s - from_s, from_b: from_b, offset_b: to_b - from_b, start_time: User.time, duration_ms: milliseconds)
+	Self.h = to_h
+	Self.s = to_s
+	Self.b = to_b
+
 custom_block ease_invisibility_sine(from: 0, offset: 0, start_time: 0, duration_ms: 1000):
 	progress = min(1, (User.time - start_time) / duration_ms)
 	set_invisibility(percent: progress * offset + from)
@@ -31,3 +37,9 @@ custom_block ease_self_displayed_rotation_quint(from: 0, offset: 0, start_time: 
 	Self.displayed_rotation = from + t * offset
 	check_once_if(progress < 1):
 		custom_block ease_self_displayed_rotation_quint(from: from, offset: offset, start_time: start_time, duration_ms: duration_ms)
+
+custom_block ease_color_sine(from_h: 0, offset_h: 0, from_s: 0, offset_s: 0, from_b: 0, offset_b: 0, start_time: 0, duration_ms: 0):
+	progress = min(1, (User.time - start_time) / duration_ms)
+	set_color(h(from_h + offset_h * progress, s: from_s + offset_s * progress, b: from_b + offset_b * progress))
+	check_once_if(progress < 1):
+		custom_block ease_color_sine(from_h: from_h, offset_h: offset_h, from_s: from_s, offset_s: offset_s, from_b: from_b, offset_b: offset_b, start_time: start_time, duration_ms: duration_ms)
