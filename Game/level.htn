@@ -74,6 +74,8 @@ Scene game:
 					custom_block get_random_number(between: 1, and_max: 5)
 				custom_block get_random_number(between: 1, and_max: Game.board_width * Game.board_height)
 				Game.main_tile_index = Self.↩️random_number - 1
+				Game.main_tile_board = Self.board
+				broadcast_message(named: Game.📣spawn_main_tile_marker)
 				custom_block update_main_tile:
 					broadcast_message(named: Game.📣update_main_tile)
 					repeat(times: Game.board_width + Game.board_height):
@@ -262,6 +264,55 @@ Scene game:
 				set_position(to_x: Self.x_position + horizontal_velocity, y: Self.y_position + vertical_velocity)
 				check_once_if(Self.y_position < -100):
 					destroy
+
+	text main_tile_marker(text: ""):
+		Game.📣spawn_main_tile_marker = "Spanw main tile marker"
+		When i_get_a_message(Game.📣spawn_main_tile_marker):
+			check_if_else(Self.clone_index == 0):
+				create_a_clone_of_this_object
+			else:
+				destroy
+		When object_is_cloned:
+			Self.random_seed = Game.current_level_index
+			repeat(times: 10):
+				custom_block get_random_number(between: 0, and_max: 2)
+			check_if_else(Self.↩️random_number == 0):
+				set_image(heart)
+			else:
+				check_if_else(Self.↩️random_number == 1):
+					set_image(star)
+				else:
+					set_image(flower)
+			set_color(h(0, s: 0, b: 95))
+			aspect_ratio = Self.height / Self.width
+			set_width(0.1 * Self.tile_size * Self.📺width_multiplier, height: 0.1 * aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+		When object_is_cloned:
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+		When object_is_cloned:
+			custom_block get_position_of_tile(index: Game.main_tile_index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
+		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
+			Self.x = Self.↩️x
+			Self.y = Self.↩️y
+			Self.origin_position_x = Self.↩️origin_position_x
+			Self.origin_position_y = Self.↩️origin_position_y
+			custom_block get_tile_at(x: Self.x, y: Self.y, board: Game.main_tile_board, width: Game.board_width)
+			custom_block set_image_for(tile: Self.↩️tile)
+		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
+			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
+			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
+		When Self.clone_index > 0:
+			set_position(to_x:Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y:Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
+		When Self.clone_index > 0:
+			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
+		When Self.displayed_rotation != Self.times_tapped * 90:
+			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
+		When i_get_a_message(Game.📣👥update_shadow):
+			wait(seconds: 0)
+			Self.times_tapped = 1 * character_at_index(in: Game.👥rotations, at: 1 + Game.main_tile_index)
 
 Scene scene_1:
 
