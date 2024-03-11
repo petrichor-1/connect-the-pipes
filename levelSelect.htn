@@ -5,7 +5,7 @@ Import "helpers/animation.htn"
 Import "helpers/lists.htn"
 Import "./drawTableButtonPress.htn"
 Import "./tapsStorage.htn"
-Import "./stars.htn"
+Import "helpers/stars.htn"
 
 text level_names(text: "4x4"):
 	Game.📣display_level_section_selector = "display main screen"

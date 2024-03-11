@@ -3,7 +3,7 @@ Import "advanced.htn"
 Import "helpers/animation.htn"
 Import "./tapsStorage.htn"
 Import "helpers/lists.htn"
-Import "./stars.htn"
+Import "helpers/stars.htn"
 
 Scene game:
 	square win_screen:
