@@ -270,3 +270,8 @@ text level_select_sounds(text: ""):
 		start_sound("dash", wait: 0)
 	When i_get_a_message(Game.📣🎨display_level_section):
 		start_sound("dash", wait: 0)
+
+text title(text: "Connect the Pipes"):
+	When game_starts:
+		set_position(to_x: Game.width / 2, y: Game.height - Self.height / 2 - 4)
+		set_color(h(0, s: 0, b: 5))
