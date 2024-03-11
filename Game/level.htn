@@ -78,7 +78,7 @@ Scene game:
 				broadcast_message(named: Game.📣spawn_main_tile_marker)
 				custom_block update_main_tile:
 					broadcast_message(named: Game.📣update_main_tile)
-					repeat(times: Game.board_width + Game.board_height):
+					repeat(times: min(30, Game.board_width * Game.board_height)):
 						wait(seconds: 0)
 					broadcast_message(named: Game.📣update_colors)
 			else:
