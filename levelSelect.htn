@@ -1,7 +1,7 @@
 Import "secretblocks.htn"
 Import "advanced.htn"
 Import "./play.htn"
-Import "./animation.htn"
+Import "helpers/animation.htn"
 Import "./lists.htn"
 Import "./drawTableButtonPress.htn"
 Import "./tapsStorage.htn"

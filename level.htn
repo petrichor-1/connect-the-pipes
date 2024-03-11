@@ -5,7 +5,7 @@ Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
 Import "./lists.htn"
-Import "./animation.htn"
+Import "helpers/animation.htn"
 
 
 Scene game:
