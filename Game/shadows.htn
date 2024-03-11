@@ -42,8 +42,8 @@ Scene game:
 			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
 			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
 		When Self.clone_index > 0:
-			set_position(to_x: -2 + Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation),
-						    y: -2 + Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation)
+			set_position(to_x: -4 + Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation),
+						    y: -4 + Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation)
 			)
 		When Self.clone_index > 0:
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
