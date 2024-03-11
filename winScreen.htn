@@ -123,8 +123,8 @@ Scene game:
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position - 10, y: Self.y_position + 0)
-				set_size(percent: 300)
+				set_position(to_x: Self.x_position - 10, y: Self.y_position - 2 * User.circle_center_y * Original_object.width)
+				set_size(percent: 150 * User.circle_scale)
 			else:
 				set_image(square)
 				set_width(182, height: 182)
@@ -152,8 +152,8 @@ Scene game:
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position, y: Self.y_position + 0)
-				set_size(percent: 300)
+				set_position(to_x: Self.x_position, y: Self.y_position)
+				set_size(percent: 150 * User.circle_scale)
 			else:
 				set_image(square)
 				set_width(182, height: 182)
@@ -176,8 +176,8 @@ Scene game:
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 1):
 				set_text(to: "◯", color: h(Game.primary_color_hue, s: 5, b: 5))
-				set_position(to_x: Self.x_position, y: Self.y_position + 0)
-				set_size(percent: 300)
+				set_position(to_x: Self.x_position, y: Self.y_position - 2 * User.circle_center_y * Original_object.height)
+				set_size(percent: 150 * User.circle_scale)
 			else:
 				set_image(square)
 				set_width(182, height: 182)

@@ -1,0 +1,30 @@
+text detector_circle(text: "◯", x_position: -100, y_position: -100, resize_scale: 5):
+	When game_starts:
+		check_once_if(User.circle_scale != 0):
+			destroy
+		start_y = Self.y_position
+		Game.detector_circle_is_touching = "false"
+		custom_block detect_circle_dimensions_top:
+			check_once_if(Game.detector_circle_is_touching != "true" and Self.y_position + Self.height / 2 > detector_pixel.y_position):
+				set_position(to_x: Self.x_position, y: Self.y_position - 1)
+				custom_block detect_circle_dimensions_top
+		circle_top = (start_y - Self.y_position) / Self.height
+		set_position(to_x: Self.x_position, y: start_y)
+		Game.detector_circle_is_touching = "false"
+		custom_block detect_circle_dimensions_bottom:
+			check_once_if(Game.detector_circle_is_touching != "true" and Self.y_position - Self.height / 2 < detector_pixel.y_position):
+				set_position(to_x: Self.x_position, y: Self.y_position + 1)
+				custom_block detect_circle_dimensions_bottom
+		circle_bottom = (start_y - Self.y_position) / Self.height
+		User.circle_scale = 1 / absolute_value(circle_bottom - circle_top)
+		User.circle_center_y = (circle_bottom + circle_top) / 2
+		# show_popup(message: join("Scale = ", with: join(User.circle_scale, with: join(", center y = ", with: User.circle_center_y))))
+
+square detector_pixel(x_position: -100, y_position: -100, resize_scale: 1):
+	When game_starts:
+		check_once_if(User.circle_scale != 0):
+			destroy
+	When game_starts:
+		set_width(25, height: 25)
+	When bumps(Self, detector_circle):
+		Game.detector_circle_is_touching = "true"

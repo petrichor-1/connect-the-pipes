@@ -1,5 +1,8 @@
 # User variables with ids from published project, just so they stay consistent and don't "reset" user progress with each update
 Import "./userVariables.hspre"
 
-# This will import everything else
+# This will import almost everything else
 Import "./levelSelect.htn"
+
+# This helps with buttons
+Import "./circleSizeDetection.htn"
