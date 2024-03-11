@@ -8,6 +8,7 @@ Import "../helpers/lists.htn"
 Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
 Import "./shadows.htn"
+Import "./textHints.htn"
 
 Scene game:
 	text level_generator(text: ""):
@@ -54,6 +55,8 @@ Scene game:
 		Game.📣update_colors = "Update colors based on connection to main tile"
 		When game_starts:
 			broadcast_message(named: Game.📣play)
+			Self.x = -1
+			Self.y = -1
 		When i_get_a_message(Game.📣play):
 			check_if_else(Self.clone_index == 0):
 				Game.is_loading = "true"
@@ -329,6 +332,7 @@ custom_rule display_connection_status_to_main_tile:
 	When i_get_a_message(Game.📣update_main_tile):
 		check_if_else(Self.clone_index == 0):
 			Original_object.rotations_list = ":"
+			Game.connected_amount = 0
 		else:
 			Original_object.rotations_list = join(Original_object.rotations_list, with: Self.times_tapped % Self.symmetry)
 	When i_get_a_message(Game.📣update_main_tile):
@@ -494,3 +498,4 @@ custom_rule display_connection_status_to_main_tile:
 	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
 		check_once_if(Self.is_connected_to_main_tile == "false"):
 			Self.is_connected_to_main_tile = "true"
+			increase(Game.connected_amount, by: 1)

@@ -1,0 +1,35 @@
+Import "secretblocks.htn"
+Import "advanced.htn"
+Import "../helpers/animation.htn"
+
+Scene game:
+	text text_hints(text: "", resize_scale: 0.5):
+		last_tap_time = 1e100
+		When game_starts:
+			set_invisibility(percent: 100)
+		When i_get_a_message(Game.📣play):
+			check_if_else(Self.clone_index > 0):
+				destroy
+			else:
+				check_once_if(Game.current_level_index == 0 and Game.board_width == 4):
+					set_text(to: "Connect all the pipes together!
+					There must not be any unconnected edges.", color: "HSB(0,0,0)")
+					wait(seconds: 0)
+					create_clones_of_this_object(times: 2)
+		When is_tapped(Screen):
+			last_tap_time = User.time
+		When Game.connected_amount == Game.board_width * Game.board_height and User.time - last_tap_time > 3000:
+			check_once_if(User.has_seen_all_edges_hint != "Yes"):
+				check_if_else(Self.clone_index > 0):
+					custom_block ease_invisibility(from: 0, to: 100, milliseconds: 100)
+					destroy
+				else:
+					set_text(to: "Everything's connected, but there are still some leaks!
+					Make sure that every ending of a pipe is round.", color: "HSB(0,0,0)")
+					wait(seconds: 0)
+					create_clones_of_this_object(times: 2)
+					User.has_seen_all_edges_hint = "Yes"
+		When object_is_cloned:
+			set_origin(to_x: Game.width / 2 - Self.width / 2 + Self.clone_index % 2 * Self.size_as_a_percent / 50, y: 8 + Game.height * 0.8 + Self.clone_index % 2 * Self.size_as_a_percent / 50)
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation * add(1, +: Self.clone_index % 2), b: Game.primary_color_brightness + 50))
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 1000)
