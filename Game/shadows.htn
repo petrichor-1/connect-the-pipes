@@ -1,0 +1,54 @@
+Import "secretblocks.htn"
+Import "../helpers/animation.htn"
+Import "./tilePosition.htn"
+Import "./displayTiles.htn"
+Import "./levelGeneratorBlocks.htn"
+
+Scene game:
+	text shadows(text:""):
+		Game.📣👥display_shadows = "Display shadows"
+		Game.📣👥update_shadow = "update shadows"
+		When i_get_a_message(Game.📣👥display_shadows):
+			check_if_else(Self.clone_index == 0):
+				Self.board = Game.👥board
+				create_clones_of_this_object(times: Game.board_width * Game.board_height)
+				broadcast_message(named: Game.📣👥update_shadow)
+			else:
+				Original_object.clone_index_offset = Self.clone_index
+				destroy
+		When object_is_cloned:
+			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			set_invisibility(percent: 100)
+		When object_is_cloned:
+			custom_block get_position_of_tile(index: Self.index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
+		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
+			Self.x = Self.↩️x
+			Self.y = Self.↩️y
+			Self.origin_position_x = Self.↩️origin_position_x
+			Self.origin_position_y = Self.↩️origin_position_y
+			custom_block get_tile_at(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
+			custom_block set_image_for(tile: Self.↩️tile)
+			send_to_back
+			aspect_ratio = Self.height / Self.width
+			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness * 0.9 + 0.1 * 5))
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 100)
+		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
+			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
+			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
+		When Self.clone_index > 0:
+			set_position(to_x: -2 + Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation),
+						    y: -2 + Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation)
+			)
+		When Self.clone_index > 0:
+			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
+		When Self.displayed_rotation != Self.times_tapped * 90:
+			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
+		When i_get_a_message(Game.📣👥update_shadow):
+			wait(seconds: 0)
+			Self.times_tapped = 1 * character_at_index(in: Game.👥rotations, at: 1 + Self.index)

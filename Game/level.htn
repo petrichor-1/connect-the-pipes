@@ -7,6 +7,7 @@ Import "./displayTiles.htn"
 Import "../helpers/lists.htn"
 Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
+Import "./shadows.htn"
 
 
 Scene game:
@@ -60,6 +61,8 @@ Scene game:
 				custom_block wait_for_level_with(index: Game.current_level_index)
 				custom_block get_item_in(list: Game.generated_levels, at_index: Game.current_level_index - Game.generated_levels_list_offset)
 				Self.board = Self.↩️📊list_item
+				Game.👥board = Self.board
+				broadcast_message(named: Game.📣👥display_shadows)
 				# Self.board = "|||R||RL||UL||RU||UL|||R|RULRUDL|RDL|UDL|||R|RDL|RDL||RL|UDL|||U|||R||RL||UL||UD||RD||RL||RL|RDL||DL:"
 				create_clones_of_this_object(times: Game.board_width * Game.board_height)
 				Game.is_loading = "false"
@@ -94,6 +97,11 @@ Scene game:
 			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
 			Self.times_tapped = random(0, to: 3)
 			Self.displayed_rotation = Self.times_tapped * 90
+		When i_get_a_message(Game.📣👥update_shadow):
+			check_if_else(Self.clone_index == 0):
+				Game.👥rotations = ":"
+			else:
+				Game.👥rotations = join(Game.👥rotations, with: Self.times_tapped)
 		When Self.clone_index > 0:
 			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
 		When Self.clone_index > 0:
@@ -108,6 +116,7 @@ Scene game:
 					# Music taps so that the notes don't give away the solution
 					increase(Self.music_taps, by: 1)
 					play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
+					broadcast_message(named: Game.📣👥update_shadow)
 					broadcast_message(named: Self.📣check_board)
 					wait(seconds: 0)
 					check_once_if(Game.board_complete == "true"):
