@@ -1,10 +1,29 @@
 # User variables with ids from published project, just so they stay consistent and don't "reset" user progress with each update
-# Import "./userVariables.hspre"
-
-# THIS DOESN'T WORK, DON'T TRUST IT!!!
+Import "./userVariables.hspre"
 
 # This will import almost everything else
 Import "./levelSelect.htn"
 
 # This helps with buttons
 Import "./circleSizeDetection.htn"
+
+Import "./lists.htn"
+
+text data_checker(text: ""):
+	When game_starts:
+		custom_block bring_over_old_user_vars
+		# If there is no user data, create it ASAP
+		check_once_if(User.progress == 0):
+			custom_block create_list(length_length: 1, content_index_length: 5)
+			list = Self.↩️📊created_list
+			repeat(times: 7):
+				custom_block append_to(list: list, new_item: 0)
+				list = Self.↩️📊appended_list
+			User.progress = list
+		custom_block setup_taps_storage_if_needed
+		# To prevent it from getting too big, rebuild user progress whenever I get the time
+		old_list = User.progress
+		custom_block rebuild(list: User.progress)
+		check_once_if(User.progress == old_list):
+			User.progress = Self.↩️📊rebuilt_list
+		destroy

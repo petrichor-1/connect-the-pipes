@@ -3,12 +3,210 @@
     {
       "type": 8007,
       "objectIdString": "67022712-39e1-45cc-a004-4bc8960d8e0e",
-      "name": "Taps"
+      "name": "Old Taps"
     },
     {
-      "name": "Progress",
+      "name": "Old Progress",
       "type": 8007,
       "objectIdString": "6fa5f507-502b-4f6c-828f-a254534a9abf"
+    }
+  ],
+  "abilities": [
+    {
+      "blocks": [
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 49,
+              "datum": {
+                "params": [
+                  {
+                    "defaultValue": "6",
+                    "key": "",
+                    "type": 57,
+                    "datum": {
+                      "type": 8007,
+                      "variable": "6fa5f507-502b-4f6c-828f-a254534a9abf",
+                      "description": "Variable"
+                    }
+                  },
+                  {
+                    "defaultValue": "7",
+                    "key": "≠",
+                    "type": 57,
+                    "value": "0"
+                  }
+                ],
+                "type": 1001,
+                "description": "≠",
+                "block_class": "conditionalOperator"
+              }
+            }
+          ],
+          "type": 122,
+          "description": "Check Once If",
+          "block_class": "conditionalControl",
+          "controlScript": {
+            "abilityID": "b1f4c00d-4df6-45a2-8972-dc185b52b092"
+          }
+        },
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 49,
+              "datum": {
+                "params": [
+                  {
+                    "defaultValue": "6",
+                    "key": "",
+                    "type": 57,
+                    "datum": {
+                      "type": 8007,
+                      "variable": "67022712-39e1-45cc-a004-4bc8960d8e0e",
+                      "description": "Variable"
+                    }
+                  },
+                  {
+                    "defaultValue": "7",
+                    "key": "≠",
+                    "type": 57,
+                    "value": "0"
+                  }
+                ],
+                "type": 1001,
+                "description": "≠",
+                "block_class": "conditionalOperator"
+              }
+            }
+          ],
+          "type": 122,
+          "description": "Check Once If",
+          "block_class": "conditionalControl",
+          "controlScript": {
+            "abilityID": "487a2173-6d89-4318-ab46-d7d0c96ae677"
+          }
+        }
+      ],
+      "abilityID": "f445e918-9a31-45fd-8a29-627de7f8570a",
+      "createdAt": 731824804.851,
+      "parameters": [],
+      "name": "Bring Over Old User Vars"
+    },
+    {
+      "blocks": [
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 42,
+              "datum": {
+                "type": 8007,
+                "variable": "phnuvProgress",
+                "description": "Variable"
+              }
+            },
+            {
+              "defaultValue": "10",
+              "key": "to",
+              "type": 48,
+              "datum": {
+                "type": 8007,
+                "variable": "6fa5f507-502b-4f6c-828f-a254534a9abf",
+                "description": "Variable"
+              }
+            }
+          ],
+          "type": 45,
+          "description": "Set",
+          "block_class": "method"
+        },
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 42,
+              "datum": {
+                "type": 8007,
+                "variable": "6fa5f507-502b-4f6c-828f-a254534a9abf",
+                "description": "Variable"
+              }
+            },
+            {
+              "defaultValue": "10",
+              "key": "to",
+              "type": 48,
+              "value": "0"
+            }
+          ],
+          "type": 45,
+          "description": "Set",
+          "block_class": "method"
+        }
+      ],
+      "abilityID": "b1f4c00d-4df6-45a2-8972-dc185b52b092",
+      "createdAt": 731824804.851
+    },
+    {
+      "blocks": [
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 42,
+              "datum": {
+                "type": 8007,
+                "variable": "phnuvTaps",
+                "description": "Variable"
+              }
+            },
+            {
+              "defaultValue": "10",
+              "key": "to",
+              "type": 48,
+              "datum": {
+                "type": 8007,
+                "variable": "67022712-39e1-45cc-a004-4bc8960d8e0e",
+                "description": "Variable"
+              }
+            }
+          ],
+          "type": 45,
+          "description": "Set",
+          "block_class": "method"
+        },
+        {
+          "parameters": [
+            {
+              "defaultValue": "",
+              "key": "",
+              "type": 42,
+              "datum": {
+                "type": 8007,
+                "variable": "67022712-39e1-45cc-a004-4bc8960d8e0e",
+                "description": "Variable"
+              }
+            },
+            {
+              "defaultValue": "10",
+              "key": "to",
+              "type": 48,
+              "value": "0"
+            }
+          ],
+          "type": 45,
+          "description": "Set",
+          "block_class": "method"
+        }
+      ],
+      "abilityID": "487a2173-6d89-4318-ab46-d7d0c96ae677",
+      "createdAt": 731824804.852
     }
   ]
 }
