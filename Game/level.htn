@@ -6,6 +6,7 @@ Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
 Import "../helpers/lists.htn"
 Import "../helpers/animation.htn"
+Import "./tilePosition.htn"
 
 
 Scene game:
@@ -68,16 +69,18 @@ Scene game:
 				Original_object.clone_index_offset = Self.clone_index
 				destroy
 		When object_is_cloned:
-			clone_index = Self.clone_index - Original_object.clone_index_offset - 1
-			Self.index = clone_index
-			x = clone_index % Game.board_width
-			Self.x = x
-			y = floor(clone_index / Game.board_width)
-			Self.y = y
+			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
-			Self.origin_position_x = Game.width / 2 - Self.tile_size * Game.board_width / 2 + Self.tile_size / 2
-			Self.origin_position_y = Game.height / 2 - Self.tile_size * Game.board_height / 2 + Self.tile_size / 2
-			custom_block get_tile_at(x: x, y: y, board: Self.board, width: Game.board_width)
+		When object_is_cloned:
+			custom_block get_position_of_tile(index: Self.index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
+		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
+			Self.x = Self.↩️x
+			Self.y = Self.↩️y
+			Self.origin_position_x = Self.↩️origin_position_x
+			Self.origin_position_y = Self.↩️origin_position_y
+			custom_block get_tile_at(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
 			wait(seconds: 0)
@@ -85,6 +88,8 @@ Scene game:
 			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
 			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
 		When object_is_cloned:
+			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
+			wait(seconds: 0)
 			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
 			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
 			Self.times_tapped = random(0, to: 3)

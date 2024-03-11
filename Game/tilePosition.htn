@@ -1,0 +1,5 @@
+custom_block get_position_of_tile(index: 0, board_width: 0, board_height: 0, tile_size: 0):
+	Self.↩️x = index % board_width
+	Self.↩️y = floor(index / board_width)
+	Self.↩️origin_position_x = Game.width / 2 - tile_size * board_width / 2 + tile_size / 2
+	Self.↩️origin_position_y = Game.height / 2 - tile_size * board_height / 2 + tile_size / 2
