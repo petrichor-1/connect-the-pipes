@@ -1,7 +1,7 @@
 Import "secretblocks.htn"
 Import "advanced.htn"
 Import "helpers/animation.htn"
-Import "./tapsStorage.htn"
+Import "helpers/tapsStorage.htn"
 Import "helpers/lists.htn"
 Import "helpers/stars.htn"
 

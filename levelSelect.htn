@@ -4,7 +4,7 @@ Import "./play.htn"
 Import "helpers/animation.htn"
 Import "helpers/lists.htn"
 Import "./drawTableButtonPress.htn"
-Import "./tapsStorage.htn"
+Import "helpers/tapsStorage.htn"
 Import "helpers/stars.htn"
 
 text level_names(text: "4x4"):
