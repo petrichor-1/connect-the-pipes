@@ -35,7 +35,7 @@ custom_block set_item_in(list: "", at_index: 0, new_item: ""):
 	Self.↩️📊set_list = join(characters_between(in: list, between: 0, and: 2 + length_length + 2 * content_index_length * at_index),  
 		with: join(characters_between(in: 10 ^ content_index_length + length(list) - 2 * content_index_length * list_length - 2 - length_length, between: 1, and: 1e100),
 		with: join(characters_between(in: 10 ^ content_index_length + length(new_item), between: 1, and: 1e100),
-		with: join(characters_between(in: list, between: 2 + length_length + 2 * content_index_length * (1 + at_index), and: 1e100),
+		with: join(characters_between(in: list, between: 2 + length_length + 2 * content_index_length * add(1, +: at_index), and: 1e100),
 		with: new_item
 	))))
 
