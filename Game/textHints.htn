@@ -18,6 +18,8 @@ Scene game:
 					create_clones_of_this_object(times: 2)
 		When is_tapped(Screen):
 			last_tap_time = User.time
+		When Game.is_win_screen_showing == "true":
+			last_tap_time = 1e100
 		When Game.connected_amount == Game.board_width * Game.board_height and User.time - last_tap_time > 3000:
 			check_once_if(User.has_seen_all_edges_hint != "Yes"):
 				check_if_else(Self.clone_index > 0):
