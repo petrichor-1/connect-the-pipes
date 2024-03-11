@@ -9,7 +9,6 @@ Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
 Import "./shadows.htn"
 
-
 Scene game:
 	text level_generator(text: ""):
 		When game_starts:
@@ -52,6 +51,7 @@ Scene game:
 		Game.📣play = "play"
 		Game.📣Success = "Success!"
 		Self.📣first_hint = "just do the first possible hint"
+		Game.📣update_colors = "Update colors based on connection to main tile"
 		When game_starts:
 			broadcast_message(named: Game.📣play)
 		When i_get_a_message(Game.📣play):
@@ -68,6 +68,17 @@ Scene game:
 				Game.is_loading = "false"
 				Game.total_taps = 0
 				# show_popup(message: Self.board)
+				Self.random_seed = Game.current_level_index + 1014
+				custom_block get_random_number(between: 1, and_max: 5)
+				repeat(times: Self.↩️random_number):
+					custom_block get_random_number(between: 1, and_max: 5)
+				custom_block get_random_number(between: 1, and_max: Game.board_width * Game.board_height)
+				Game.main_tile_index = Self.↩️random_number - 1
+				custom_block update_main_tile:
+					broadcast_message(named: Game.📣update_main_tile)
+					repeat(times: Game.board_width + Game.board_height):
+						wait(seconds: 0)
+					broadcast_message(named: Game.📣update_colors)
 			else:
 				Original_object.clone_index_offset = Self.clone_index
 				destroy
@@ -84,12 +95,18 @@ Scene game:
 			Self.origin_position_x = Self.↩️origin_position_x
 			Self.origin_position_y = Self.↩️origin_position_y
 			custom_block get_tile_at(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
+			Self.tile = Self.↩️tile
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
 			wait(seconds: 0)
 			aspect_ratio = Self.height / Self.width
 			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
-			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 40))
+		When i_get_a_message(Game.📣update_colors):
+			check_if_else(Self.is_connected_to_main_tile == "true"):
+				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 50))
+			else:
+				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation + 60, b: Game.primary_color_brightness + 40))
 		When object_is_cloned:
 			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/
 			wait(seconds: 0)
@@ -118,7 +135,7 @@ Scene game:
 					play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
 					broadcast_message(named: Game.📣👥update_shadow)
 					broadcast_message(named: Self.📣check_board)
-					wait(seconds: 0)
+					custom_block update_main_tile
 					check_once_if(Game.board_complete == "true"):
 						broadcast_message(named: Game.📣Success)
 		When i_get_a_message(Self.📣check_board):
@@ -154,6 +171,7 @@ Scene game:
 			check_once_if(Game.❓chosen_hint == -1 and Self.times_tapped % Self.symmetry != 0):
 				Game.❓chosen_hint = Self.index
 				custom_block hint_myself
+		custom_rule display_connection_status_to_main_tile
 
 	text tap_count_display(text: "Taps: 0"):
 		When game_starts:
@@ -252,3 +270,177 @@ custom_block wait_for_level_with(index: 0):
 	check_once_if(Self.↩️📊list_length + Game.generated_levels_list_offset <= index):
 		wait(seconds: 0)
 		custom_block wait_for_level_with(index: index)
+
+custom_rule display_connection_status_to_main_tile:
+	Game.📣update_main_tile = "Update main tile"
+	Game.📣connect_to_main_tile_at = "Connect the main tile to the tile at "
+	index = 0
+	rotated_amount = 0
+	When i_get_a_message(Game.📣update_main_tile):
+		check_if_else(Self.clone_index == 0):
+			Original_object.rotations_list = ":"
+		else:
+			Original_object.rotations_list = join(Original_object.rotations_list, with: Self.times_tapped % Self.symmetry)
+	When i_get_a_message(Game.📣update_main_tile):
+		check_if_else(Self.index == Game.main_tile_index):
+			Self.is_connected_to_main_tile = "false"
+			broadcast_message(named: join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y))))
+		else:
+			Self.is_connected_to_main_tile = "false"
+	# Rotate my connections
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.rotated_connections = ":"
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.tile MATCHES "L"):
+				Self.rotated_connections = join(Self.rotated_connections, with: character_at_index(in: "LDRU", at: Self.times_tapped % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.tile MATCHES "D"):
+				Self.rotated_connections = join(Self.rotated_connections, with: character_at_index(in: "DRUL", at: Self.times_tapped % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.tile MATCHES "R"):
+				Self.rotated_connections = join(Self.rotated_connections, with: character_at_index(in: "RULD", at: Self.times_tapped % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.tile MATCHES "U"):
+				Self.rotated_connections = join(Self.rotated_connections, with: character_at_index(in: "ULDR", at: Self.times_tapped % 4))
+	# Update my connected neighbors
+
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.rotated_connections_2 = ":"
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			index = ((Self.y +  0) * Game.board_width + (Self.x + -1)) * 4
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.↩️tile = characters_between(in: Self.board, between: index, and: index + 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			rotated_amount = character_at_index(in: Original_object.rotations_list, at: 1 + index / 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "L"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "LDRU", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "D"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "DRUL", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "R"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "RULD", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "U"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "ULDR", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.rotated_connections_2 MATCHES "R" and Self.rotated_connections MATCHES "L" and Self.y +  0 >= 0 and Self.y +  0 < Game.board_height and Self.x + -1 >= 0 and Self.x + -1 < Game.board_width):
+				broadcast_message(named: join(Game.📣connect_to_main_tile_at, with: join(Self.x + -1, with: join(",", with: Self.y +  0))))
+
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.rotated_connections_2 = ":"
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			index = ((Self.y +  0) * Game.board_width + (Self.x +  1)) * 4
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.↩️tile = characters_between(in: Self.board, between: index, and: index + 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			rotated_amount = character_at_index(in: Original_object.rotations_list, at: 1 + index / 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "L"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "LDRU", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "D"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "DRUL", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "R"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "RULD", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "U"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "ULDR", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.rotated_connections_2 MATCHES "L" and Self.rotated_connections MATCHES "R" and Self.y +  0 >= 0 and Self.y +  0 < Game.board_height and Self.x +  1 >= 0 and Self.x +  1 < Game.board_width):
+				broadcast_message(named: join(Game.📣connect_to_main_tile_at, with: join(Self.x +  1, with: join(",", with: Self.y +  0))))
+
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.rotated_connections_2 = ":"
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			index = ((Self.y + -1) * Game.board_width + (Self.x +  0)) * 4
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.↩️tile = characters_between(in: Self.board, between: index, and: index + 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			rotated_amount = character_at_index(in: Original_object.rotations_list, at: 1 + index / 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "L"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "LDRU", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "D"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "DRUL", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "R"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "RULD", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "U"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "ULDR", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.rotated_connections_2 MATCHES "U" and Self.rotated_connections MATCHES "D" and Self.y + -1 >= 0 and Self.y + -1 < Game.board_height and Self.x +  0 >= 0 and Self.x +  0 < Game.board_width):
+				broadcast_message(named: join(Game.📣connect_to_main_tile_at, with: join(Self.x +  0, with: join(",", with: Self.y + -1))))
+
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.rotated_connections_2 = ":"
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			index = ((Self.y +  1) * Game.board_width + (Self.x +  0)) * 4
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.↩️tile = characters_between(in: Self.board, between: index, and: index + 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			rotated_amount = character_at_index(in: Original_object.rotations_list, at: 1 + index / 4)
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "L"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "LDRU", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "D"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "DRUL", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "R"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "RULD", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.↩️tile MATCHES "U"):
+				Self.rotated_connections_2 = join(Self.rotated_connections_2, with: character_at_index(in: "ULDR", at: rotated_amount % 4))
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			check_once_if(Self.rotated_connections_2 MATCHES "D" and Self.rotated_connections MATCHES "U" and Self.y +  1 >= 0 and Self.y +  1 < Game.board_height and Self.x +  0 >= 0 and Self.x +  0 < Game.board_width):
+				broadcast_message(named: join(Game.📣connect_to_main_tile_at, with: join(Self.x +  0, with: join(",", with: Self.y +  1))))
+
+	When i_get_a_message(join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))):
+		check_once_if(Self.is_connected_to_main_tile == "false"):
+			Self.is_connected_to_main_tile = "true"
