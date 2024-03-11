@@ -81,12 +81,14 @@ Scene game:
 				broadcast_message(named: Game.📣spawn_main_tile_marker)
 				custom_block update_main_tile:
 					broadcast_message(named: Game.📣update_main_tile)
-					repeat(times: min(30, Game.board_width * Game.board_height)):
-						wait(seconds: 0)
-					broadcast_message(named: Game.📣update_colors)
 			else:
 				Original_object.clone_index_offset = Self.clone_index
 				destroy
+		When i_get_a_message(Game.📣update_main_tile):
+			check_once_if(Self.clone_index == 0):
+				repeat(times: min(30, Game.board_width * Game.board_height)):
+					wait(seconds: 0)
+				broadcast_message(named: Game.📣update_colors)
 		When object_is_cloned:
 			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
