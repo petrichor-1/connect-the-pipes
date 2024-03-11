@@ -1,4 +1,4 @@
-Import "./level.htn"
+Import "Game/level.htn"
 Import "helpers/animation.htn"
 
 square play_cover:

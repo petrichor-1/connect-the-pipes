@@ -1,9 +1,9 @@
 Import "secretblocks.htn"
 Import "advanced.htn"
-Import "helpers/animation.htn"
-Import "helpers/tapsStorage.htn"
-Import "helpers/lists.htn"
-Import "helpers/stars.htn"
+Import "../helpers/animation.htn"
+Import "../helpers/tapsStorage.htn"
+Import "../helpers/lists.htn"
+Import "../helpers/stars.htn"
 
 Scene game:
 	square win_screen:

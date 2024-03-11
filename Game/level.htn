@@ -4,8 +4,8 @@ Import "./winScreen.htn"
 Import "./loadingScreen.htn"
 Import "./levelGeneratorBlocks.htn"
 Import "./displayTiles.htn"
-Import "helpers/lists.htn"
-Import "helpers/animation.htn"
+Import "../helpers/lists.htn"
+Import "../helpers/animation.htn"
 
 
 Scene game:
