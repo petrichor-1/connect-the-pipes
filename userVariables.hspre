@@ -1,0 +1,14 @@
+{
+  "variables": [
+    {
+      "type": 8007,
+      "objectIdString": "67022712-39e1-45cc-a004-4bc8960d8e0e",
+      "name": "Taps"
+    },
+    {
+      "name": "Progress",
+      "type": 8007,
+      "objectIdString": "6fa5f507-502b-4f6c-828f-a254534a9abf"
+    }
+  ]
+}
