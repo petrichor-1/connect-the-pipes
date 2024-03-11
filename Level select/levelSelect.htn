@@ -1,11 +1,11 @@
 Import "secretblocks.htn"
 Import "advanced.htn"
 Import "./play.htn"
-Import "helpers/animation.htn"
-Import "helpers/lists.htn"
+Import "../helpers/animation.htn"
+Import "../helpers/lists.htn"
 Import "./drawTableButtonPress.htn"
-Import "helpers/tapsStorage.htn"
-Import "helpers/stars.htn"
+Import "../helpers/tapsStorage.htn"
+Import "../helpers/stars.htn"
 
 text level_names(text: "4x4"):
 	Game.📣display_level_section_selector = "display main screen"

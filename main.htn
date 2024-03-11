@@ -2,7 +2,7 @@
 Import "./userVariables.hspre"
 
 # This will import almost everything else
-Import "./levelSelect.htn"
+Import "Level select/levelSelect.htn"
 
 # This helps with buttons
 Import "./circleSizeDetection.htn"
