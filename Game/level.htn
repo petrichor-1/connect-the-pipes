@@ -310,8 +310,7 @@ Scene game:
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
 		When Self.displayed_rotation != Self.times_tapped * 90:
 			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
-		When i_get_a_message(Game.📣👥update_shadow):
-			wait(seconds: 0)
+		When Self.clone_index > 0:
 			Self.times_tapped = 1 * character_at_index(in: Game.👥rotations, at: 1 + Game.main_tile_index)
 
 Scene scene_1:
