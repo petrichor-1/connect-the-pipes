@@ -22,6 +22,7 @@ Scene game:
 			set_tempo(480)
 			set_position(to_x: Game.width / 2, y: Game.height * 0.8 + Self.height + 8)
 		When i_get_a_message(Game.📣Success):
+			Game.is_win_screen_showing = "true"
 			bring_to_front
 			custom_block ease_invisibility(from: 100, to: 20, milliseconds: 1000)
 			check_if_else(Self.clone_index == 0):
@@ -33,6 +34,8 @@ Scene game:
 				repeat(times:6):
 					play_note(note, rhythm: 0.25)
 					increase(note, by: 1)
+		When i_get_a_message(Game.📣play):
+			Game.is_win_screen_showing = "false"
 
 	text win_screen_level_display(text: "Level 4x4 – 0", resize_scale: 0.8):
 		custom_rule hide_on_play

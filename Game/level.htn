@@ -134,18 +134,19 @@ Scene game:
 		When Self.displayed_rotation != Self.times_tapped * 90:
 			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
 		When is_tapped(Screen):
-			check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
-				custom_block rotate_self:
-					increase(Self.times_tapped, by: 1)
-					increase(Game.total_taps, by: 1)
-					# Music taps so that the notes don't give away the solution
-					increase(Self.music_taps, by: 1)
-					play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
-					broadcast_message(named: Game.📣👥update_shadow)
-					broadcast_message(named: Self.📣check_board)
-					custom_block update_main_tile
-					check_once_if(Game.board_complete == "true"):
-						broadcast_message(named: Game.📣Success)
+			check_once_if(Game.is_win_screen_showing != "true"):
+				check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
+					custom_block rotate_self:
+						increase(Self.times_tapped, by: 1)
+						increase(Game.total_taps, by: 1)
+						# Music taps so that the notes don't give away the solution
+						increase(Self.music_taps, by: 1)
+						play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
+						broadcast_message(named: Game.📣👥update_shadow)
+						broadcast_message(named: Self.📣check_board)
+						custom_block update_main_tile
+						check_once_if(Game.board_complete == "true"):
+							broadcast_message(named: Game.📣Success)
 		When i_get_a_message(Self.📣check_board):
 			check_if_else(Self.clone_index == 0):
 				Game.board_complete = "true"
