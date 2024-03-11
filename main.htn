@@ -1,5 +1,7 @@
 # User variables with ids from published project, just so they stay consistent and don't "reset" user progress with each update
-Import "./userVariables.hspre"
+# Import "./userVariables.hspre"
+
+# THIS DOESN'T WORK, DON'T TRUST IT!!!
 
 # This will import almost everything else
 Import "./levelSelect.htn"
