@@ -1,0 +1,62 @@
+Import "../controller support/pipes.htn"
+Import "../helpers/animation.htn"
+Import "../helpers/textRendering.htn"
+
+Scene game:
+	square back_button_controller_support:
+		Game.📣controller_back = "Controller back to level selcet"
+		When game_starts:
+			set_invisibility(percent: 100)
+			set_position(to_x: Game.width / 2, y: Game.height / 2)
+			set_width(300, height: 160)
+			set_color(h(0, s: 0, b: 95))
+		When i_get_a_message(Game.📣menu_pressed):
+			check_if_else(Self.clone_index == 0):
+				check_if_else(Self.total_clones > 1):
+					set_invisibility(percent: 100)
+				else:
+					bring_to_front
+					Self.role = "text1"
+					create_a_clone_of_this_object
+					Self.role = "text2"
+					create_a_clone_of_this_object
+					Self.role = "text3"
+					create_a_clone_of_this_object
+					custom_block ease_invisibility(from: 100, to: 0, milliseconds: 100)
+			else:
+				wait(seconds: 0)
+				destroy
+		When object_is_cloned:
+			check_if_else(Self.role == "text1"):
+				Self.role = 0
+				set_size(percent: 50)
+				Self.color = "red"
+				custom_block display_text(origin_x: Original_object.origin_x + 4, origin_y: Original_object.origin_y + 4, text: "Ⓑ [#0D0D0D]No ")
+				destroy
+			else:
+				check_if_else(Self.role == "text2"):
+					Self.role = 0
+					set_size(percent: 50)
+					Self.color = "green"
+					custom_block display_text(origin_x: Original_object.origin_x + 4, origin_y: Original_object.origin_y + 64, text: "Ⓐ [#0D0D0D]Yes ")
+					destroy
+				else:
+					check_if_else(Self.role == "text3"):
+						Self.role = 0
+						set_size(percent: 50)
+						Self.color = "green"
+						custom_block display_text(origin_x: Original_object.origin_x + 8, origin_y: Original_object.origin_y + 100, text: "Return to [blue]level select? ")
+						destroy
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 100)
+		When i_get_a_message(Game.📣b_pressed):
+			check_if_else(Self.clone_index == 0):
+				set_invisibility(percent: 100)
+			else:
+				destroy
+		When i_get_a_message(Game.📣a_pressed):
+			check_once_if(Self.invisibility_as_a_percent == 0):
+				check_if_else(Self.clone_index == 0):
+					set_invisibility(percent: 0)
+					broadcast_message(named: Game.📣controller_back)
+				else:
+					destroy

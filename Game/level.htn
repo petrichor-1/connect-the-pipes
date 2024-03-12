@@ -10,6 +10,7 @@ Import "./tilePosition.htn"
 Import "./shadows.htn"
 Import "./textHints.htn"
 Import "./levelControllerSupport.htn"
+Import "./backButtonControllerSupport.htn"
 
 Scene game:
 	text level_generator(text: ""):
@@ -205,6 +206,8 @@ Scene game:
 			set_angle(180)
 			set_origin(to_x: 8, y: 8)
 		When is_tapped(Self):
+			broadcast_message(named: Game.📣back_to_level_select)
+		When i_get_a_message(Game.📣controller_back):
 			broadcast_message(named: Game.📣back_to_level_select)
 
 	square unplay_cover:
