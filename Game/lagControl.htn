@@ -2,7 +2,6 @@ Import "advanced.htn"
 
 Scene game:
 	text lag_control(x_position: 512, y_position: 384):
-		Game.📣remove_shadows = "Remove existing shadows"
 		frame_time = 0
 		last_frame_at = User.time
 		bad_windows = 0
@@ -18,7 +17,7 @@ Scene game:
 			check_if_else(average > 20):
 				increase(bad_windows, by: 1)
 				check_once_if(bad_windows > 10):
-					broadcast_message(named: Game.📣remove_shadows)
+					Game.shadows_disabled = "true"
 			else:
 				bad_windows = 0
 			set_text(to: average, color: "HSB(0,0,0)")
