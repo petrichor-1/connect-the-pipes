@@ -1,0 +1,57 @@
+Import "../controller support/pipes.htn"
+Import "../helpers/animation.htn"
+Import "./tilePosition.htn"
+
+Scene game:
+	rounded_square controller_rotator:
+		Game.📣🕹️rotate_counterclockwise = "Rotate controller counterclockwise"
+		Game.📣🕹️rotate_clockwise = "Rotate controller clockwise"
+		previous_index = 0
+		When game_starts:
+			Self.index = 0
+			set_position(to_x: -100000, y: -1000000)
+			set_color(h(Game.primary_color_hue, s: 5, b: Game.primary_color_brightness))
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			set_width(Self.tile_size, height: Self.tile_size)
+		When i_get_a_message(Game.📣dpad_left_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				check_if_else(Self.index % Game.board_width > 0):
+					increase(Self.index, by: -1)
+				else:
+					increase(Self.index, by: Game.board_width - 1)
+		When i_get_a_message(Game.📣dpad_down_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				check_if_else(floor(Self.index / Game.board_width) > 0):
+					increase(Self.index, by: -1 * Game.board_width)
+				else:
+					increase(Self.index, by: Game.board_width * subtract(Game.board_height, 1))
+		When i_get_a_message(Game.📣dpad_right_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				check_if_else(Self.index % Game.board_width < Game.board_width - 1):
+					increase(Self.index, by: 1)
+				else:
+					increase(Self.index, by: -1 * subtract(Game.board_width, 1))
+		When i_get_a_message(Game.📣dpad_up_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				check_if_else(floor(Self.index / Game.board_width) < Game.board_height - 1):
+					increase(Self.index, by: Game.board_width)
+				else:
+					increase(Self.index, by: -1 * Game.board_width * subtract(Game.board_height, 1))
+		When previous_index != Self.index:
+			custom_block get_position_of_tile(index: Self.index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
+			previous_index = Self.index
+			Self.x = Self.↩️x
+			Self.y = Self.↩️y
+			Self.origin_position_x = Self.↩️origin_position_x
+			Self.origin_position_y = Self.↩️origin_position_y
+			x = Self.origin_position_x + Self.tile_size * Self.x
+			y = Self.origin_position_y + Self.tile_size * Self.y
+			custom_block ease_position_and_size(from_x: Self.x_position, to_x: x, from_y: Self.y_position, to_y: y, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 100)
+		When i_get_a_message(Game.📣a_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				Game.🕹️index = Self.index
+				broadcast_message(named: Game.📣🕹️rotate_counterclockwise)
+		When i_get_a_message(Game.📣b_pressed):
+			check_once_if(Game.is_win_screen_showing != "true"):
+				Game.🕹️index = Self.index
+				broadcast_message(named: Game.📣🕹️rotate_clockwise)

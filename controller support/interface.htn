@@ -1,0 +1,54 @@
+Import "secretblocks.htn"
+
+_defineBlockType operator(Number) ae 22 "None" 42 _ "≫" "", 
+
+custom_rule 🎮ae_mod_interface:
+	Self.📣button_pressed = join(Self.name, with: ": controller button pressed with index ")
+	Self.📣button_unpressed = join(Self.name, with: ": controller button released with index ")
+	is_currently_pressed = "false"
+	When game_starts:
+		check_once_if(Self.total_clones == 1):
+			check_if_else(ae("_ae_webplayer_action: {\"name\": \"isWebExp\"}") == 1):
+				Self.🎮controllers_supported = "true"
+				create_clones_of_this_object(times: 17)
+			else:
+				Self.🎮controllers_supported = "false"
+	When ae(join("_ae_webplayer_action: {
+	\"name\": \"checkControllerButton\",
+	\"args\": [
+	  0,
+	  2,
+	  [", with: join(Self.clone_index, with: "]
+	]
+  }"))) == 1:
+		check_once_if(is_currently_pressed != "true"):
+			is_currently_pressed = "true"
+			broadcast_message(named: join(Self.📣button_pressed, with: Self.clone_index))
+	When ae(join("_ae_webplayer_action: {
+		\"name\": \"checkControllerButton\",
+		\"args\": [
+			0,
+			2,
+			[", with: join(Self.clone_index, with: "]
+		]
+	}"))) != 1:
+		check_once_if(is_currently_pressed == "true"):
+			is_currently_pressed = "false"
+			broadcast_message(named: join(Self.📣button_unpressed, with: Self.clone_index))
+	When Self.clone_index == 0:
+		Self.🎮lx = ae("_ae_webplayer_action: {
+			\"name\": \"checkControllerAxis\",
+			\"args\": [0,0]
+		}")
+		Self.🎮ly = -1 * ae("_ae_webplayer_action: {
+			\"name\": \"checkControllerAxis\",
+			\"args\": [0,1]
+		}")
+		Self.🎮rx = ae("_ae_webplayer_action: {
+			\"name\": \"checkControllerAxis\",
+			\"args\": [0,2]
+		}")
+		Self.🎮ry = -1 * ae("_ae_webplayer_action: {
+			\"name\": \"checkControllerAxis\",
+			\"args\": [0,3]
+		}")

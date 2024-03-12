@@ -1,0 +1,51 @@
+Import "advanced.htn"
+Import "./interface.htn"
+
+Scene game:
+	text low_level_controller_support:
+		# Provide controller support in Awesome_E's modded webplayer
+		milliseconds_for_single_press = 1000
+		repeat_press_interval = 500
+		Game.📣dpad_right_pressed = "dpad right pressed"
+		Game.📣dpad_left_pressed = "dpad left pressed"
+		Game.📣dpad_up_pressed = "dpad up pressed"
+		Game.📣dpad_down_pressed = "dpad down pressed"
+		Game.📣a_pressed = "a pressed"
+		Game.📣b_pressed = "b pressed"
+		pressed_at = "never"
+		repeatedly_pressed_at = 0
+		custom_rule 🎮ae_mod_interface
+		When game_starts:
+			wait(seconds: 0)
+			check_once_if(Self.🎮controllers_supported != "true"):
+				destroy
+			Self.📣press_message = Game.📣a_pressed
+		When object_is_cloned:
+			check_if_else(Self.clone_index == 15):
+				Self.📣press_message = Game.📣dpad_right_pressed
+			else:
+				check_if_else(Self.clone_index == 14):
+					Self.📣press_message = Game.📣dpad_left_pressed
+				else:
+					check_if_else(Self.clone_index == 12):
+						Self.📣press_message = Game.📣dpad_up_pressed
+					else:
+						check_if_else(Self.clone_index == 13):
+							Self.📣press_message = Game.📣dpad_down_pressed
+						else:
+							check_if_else(Self.clone_index == 1):
+								Self.📣press_message = Game.📣b_pressed
+							else:
+								destroy
+			repeat_forever:
+				check_once_if(User.time - pressed_at > milliseconds_for_single_press and pressed_at == 1 * pressed_at):
+					check_once_if(User.time - repeatedly_pressed_at > repeat_press_interval):
+						repeatedly_pressed_at = User.time
+						broadcast_message(named: Self.📣press_message)
+		When i_get_a_message(join(Self.📣button_pressed, with: Self.clone_index)):
+			pressed_at = User.time
+		When i_get_a_message(join(Self.📣button_unpressed, with: Self.clone_index)):
+			check_if_else(User.time - pressed_at < milliseconds_for_single_press):
+				broadcast_message(named: Self.📣press_message)
+			pressed_at = "never"
+			repeatedly_pressed_at = 0

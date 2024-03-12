@@ -9,6 +9,7 @@ Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
 Import "./shadows.htn"
 Import "./textHints.htn"
+Import "./levelControllerSupport.htn"
 
 Scene game:
 	text level_generator(text: ""):
@@ -138,9 +139,9 @@ Scene game:
 		When is_tapped(Screen):
 			check_once_if(Game.is_win_screen_showing != "true"):
 				check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
-					custom_block rotate_self:
-						increase(Self.times_tapped, by: 1)
-						increase(Game.total_taps, by: 1)
+					custom_block rotate_self(amount: 1):
+						increase(Self.times_tapped, by: amount)
+						increase(Game.total_taps, by: amount)
 						# Music taps so that the notes don't give away the solution
 						increase(Self.music_taps, by: 1)
 						play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
@@ -175,13 +176,19 @@ Scene game:
 						check_if_else(Self.times_tapped % Self.symmetry != 0):
 							custom_block hint_myself:
 								custom_block summon_confetti
-								custom_block rotate_self
+								custom_block rotate_self(amount: 1)
 						else:
 							broadcast_message(named: join(Game.📣provide_hint, with: msg))
 		When i_get_a_message(Self.📣first_hint):
 			check_once_if(Game.❓chosen_hint == -1 and Self.times_tapped % Self.symmetry != 0):
 				Game.❓chosen_hint = Self.index
 				custom_block hint_myself
+		When i_get_a_message(Game.📣🕹️rotate_counterclockwise):
+			check_once_if(Game.🕹️index == Self.index):
+				custom_block rotate_self(amount: 1)
+		When i_get_a_message(Game.📣🕹️rotate_clockwise):
+			check_once_if(Game.🕹️index == Self.index):
+				custom_block rotate_self(amount: 3)
 		custom_rule display_connection_status_to_main_tile
 
 	text tap_count_display(text: "Taps: 0"):
