@@ -1,0 +1,90 @@
+Import "advanced.htn"
+Import "../helpers/dateFormats.htn"
+Import "../helpers/textRendering.htn"
+Import "../helpers/animation.htn"
+Import "../Game/levelGeneratorBlocks.htn"
+
+text daily_challenge:
+	Game.📣display_daily_challenge = "display daily challenge"
+	Game.📣show_daily_challenge_buttons = "Show daily challenge buttons"
+	When i_get_a_message(Game.📣display_daily_challenge):
+		check_if_else(Self.clone_index == 0):
+			set_invisibility(percent: 100)
+			Self.color = "#0D0D0D"
+			set_size(percent: 75)
+			custom_block get_probable_date_format
+			custom_block display_text(origin_x: 64, origin_y: Game.height - 150, text: join("Play the 𝐁𝐁Daily challenge𝐁𝐁 for [#243010]", with: join(Self.↩️formatted_date, with: "[#0D0D0D]: ")))
+			broadcast_message(named: Self.name)
+			set_size(percent: 50)
+			Self.color = "#0D0D0D"
+			custom_block display_text(origin_x: 64, origin_y: Game.height - 200, text: "– [#243010]Play 𝐁𝐁10𝐁𝐁 levels each day ")
+			Self.color = "#0D0D0D"
+			custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height + 2, text: "– [#243010]Unique levels 𝐁𝐁every time𝐁𝐁! ")
+			Self.color = "#0D0D0D"
+			custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height + 2, text: "– [#243010]One attempt per level ")
+			Self.color = "#0D0D0D"
+			custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height + 2, text: "– [#243010]Compare your scores ")
+			broadcast_message(named: Self.name)
+			y = Self.origin_y
+			set_size(percent: 100)
+			custom_block get_month_name
+			Self.color = "#243010"
+			custom_block display_text(origin_x: 64, origin_y: y - Self.height + 2, text: join("Challenge for 𝐁𝐁", with: join(characters_between(in: Self.↩️month_name, between: 0, and: 3), with: join(". ", with: join(User.day, with: join(" ", with: join(User.year, with: "𝐁𝐁: ")))))))
+			broadcast_message(named: Self.name)
+			y = Self.origin_y
+			set_size(percent: 50)
+			Game.daily_challenge_seed = User.year * 10000 + User.month * 100 + User.day
+			i = 0
+			repeat(times: 10):
+				increase(i, by: 1)
+				Self.random_seed = Game.daily_challenge_seed + 100000000 * i
+				custom_block get_random_number(between: 3, and_max: 9)
+				width = Self.↩️random_number
+				custom_block get_random_number(between: 3, and_max: 9)
+				height = Self.↩️random_number
+				Self.color = "#0D0D0D"
+				custom_block display_text(origin_x: 64, origin_y: y - Self.height + 2, text: join(i, with: join(". [#243010]A 𝐁𝐁", with: join(width, with: join("𝐁𝐁x𝐁𝐁", with: join(height, with: "𝐁𝐁 level "))))))
+				y = Self.origin_y
+				broadcast_message(named: Self.name)
+			broadcast_message(named: Game.📣show_daily_challenge_buttons)
+		else:
+			destroy
+	When i_get_a_message(Self.name):
+		check_once_if(Self.clone_index > 0 and Self.invisibility_as_a_percent > 0):
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 250)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position + Game.width, from_y: Self.y_position, to_y: Self.y_position - Game.width, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+		check_once_if(Self.clone_index > 0):
+			destroy
+
+text daily_challenge_play_button(text: "Play", resize_scale: 2):
+	When game_starts:
+		set_position(to_x: 014, y: -1000000)
+	When i_get_a_message(Game.📣show_daily_challenge_buttons):
+		set_color(h(200, s: 20, b: 50))
+		start_sound("dash", wait: 0)
+		x = Game.width - Self.width / 2 - 32
+		custom_block ease_position_and_size(from_x: x, to_x: x, from_y: -100, to_y: Self.height / 2 + 32, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		Game.daily_challenge_active = "false"
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position + Game.width, from_y: Self.y_position, to_y: Self.y_position - Game.width, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+	When is_tapped(Self):
+		Game.daily_challenge_active = "true"
+		Game.current_level_index = 1
+		broadcast_message(named: Game.📣play_level)
+
+text daily_challenge_back_button(text: "No, thanks", resize_scale: 1.5):
+	When game_starts:
+		set_position(to_x: 014, y: -1000000)
+	When i_get_a_message(Game.📣show_daily_challenge_buttons):
+		wait_milliseconds(100)
+		set_color(h(0, s: 20, b: 50))
+		start_sound("dash", wait: 0)
+		x = Self.width / 2 + 32
+		custom_block ease_position_and_size(from_x: x, to_x: x, from_y: -100, to_y: Self.height / 2 + 32, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
+	When is_tapped(Self):
+		broadcast_message(named: Game.📣display_level_section_selector)
+	When game_starts:
+		broadcast_message(named: Game.📣display_level_section_selector)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position + Game.width, from_y: Self.y_position, to_y: Self.y_position - Game.width, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)

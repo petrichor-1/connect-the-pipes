@@ -12,6 +12,7 @@ Import "./textHints.htn"
 Import "./levelControllerSupport.htn"
 Import "./backButtonControllerSupport.htn"
 Import "./lagControl.htn"
+Import "./dailyChallenge.htn"
 
 Scene game:
 	text level_generator(text: ""):
@@ -27,28 +28,31 @@ Scene game:
 			custom_block create_list(length_length: 2, content_index_length: 4)
 			Game.generated_levels = Self.↩️📊created_list
 			Game.generated_levels_list_offset = Game.current_level_index
-			index_of_level_generation = Game.current_level_index
-			repeat_forever:
-				check_if_else(length(Game.generated_levels) < 1000):
-					custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: index_of_level_generation)
-					custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
-					Game.generated_levels = Self.↩️📊appended_list
-					increase(index_of_level_generation, by: 1)
-					# show_popup(message: Game.generated_levels)
-				else:
-					check_once_if(Game.current_level_index > Game.generated_levels_list_offset):
-						list = Game.generated_levels
-						new_offset = Game.generated_levels_list_offset
-						repeat(times: Game.current_level_index - Game.generated_levels_list_offset):
-							custom_block remove_item_in(list: list, at_index: 0)
-							# show_popup(message: join("Before: ", with: join(list, with: join("
-							# 
-							# after: ", with: Self.↩️📊removed_list))))
-							list = Self.↩️📊removed_list
-							increase(new_offset, by: 1)
-						custom_block rebuild(list: list)
-						Game.generated_levels = Self.↩️📊rebuilt_list
-						Game.generated_levels_list_offset = new_offset
+			check_if_else(Game.daily_challenge_active == "true"):
+				custom_block daily_challenge_level_generation
+			else:
+				index_of_level_generation = Game.current_level_index
+				repeat_forever:
+					check_if_else(length(Game.generated_levels) < 1000):
+						custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: index_of_level_generation)
+						custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
+						Game.generated_levels = Self.↩️📊appended_list
+						increase(index_of_level_generation, by: 1)
+						# show_popup(message: Game.generated_levels)
+					else:
+						check_once_if(Game.current_level_index > Game.generated_levels_list_offset):
+							list = Game.generated_levels
+							new_offset = Game.generated_levels_list_offset
+							repeat(times: Game.current_level_index - Game.generated_levels_list_offset):
+								custom_block remove_item_in(list: list, at_index: 0)
+								# show_popup(message: join("Before: ", with: join(list, with: join("
+								# 
+								# after: ", with: Self.↩️📊removed_list))))
+								list = Self.↩️📊removed_list
+								increase(new_offset, by: 1)
+							custom_block rebuild(list: list)
+							Game.generated_levels = Self.↩️📊rebuilt_list
+							Game.generated_levels_list_offset = new_offset
 
 	text tiles(text: ""):
 		Self.📣check_board = "Check board for finished"
@@ -63,6 +67,12 @@ Scene game:
 		When i_get_a_message(Game.📣play):
 			check_if_else(Self.clone_index == 0):
 				Game.is_loading = "true"
+				check_if_else(Game.daily_challenge_active == "true"):
+					Self.random_seed = Game.daily_challenge_seed + 100000000 * Game.current_level_index
+					custom_block get_random_number(between: 3, and_max: 9)
+					Game.board_width = Self.↩️random_number
+					custom_block get_random_number(between: 3, and_max: 9)
+					Game.board_height = Self.↩️random_number
 				# show_popup(message: join("Looking for level with index ", with: Game.current_level_index))
 				custom_block wait_for_level_with(index: Game.current_level_index)
 				custom_block get_item_in(list: Game.generated_levels, at_index: Game.current_level_index - Game.generated_levels_list_offset)

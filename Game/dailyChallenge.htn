@@ -1,0 +1,24 @@
+Import "./levelGeneratorBlocks.htn"
+Import "../helpers/lists.htn"
+
+Scene game:
+	text daily_challenge_text(text: "Daily challenge!"):
+		When game_starts:
+			check_if_else(Game.daily_challenge_active == "true"):
+				set_color(h(Game.primary_color_hue, s: 25, b: Game.primary_color_brightness))
+				set_origin(to_x: 4, y: Game.height - Self.height - 64)
+			else:
+				set_position(to_x: 014, y: 100000000)
+
+custom_block daily_challenge_level_generation:
+	i = 0
+	repeat(times: 10):
+		increase(i, by: 1)
+		Self.random_seed = Game.daily_challenge_seed + 100000000 * i
+		custom_block get_random_number(between: 3, and_max: 9)
+		width = Self.↩️random_number
+		custom_block get_random_number(between: 3, and_max: 9)
+		height = Self.↩️random_number
+		custom_block generate_level(width: width, height: height, seed: Game.daily_challenge_seed + i * 100000000)
+		custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
+		Game.generated_levels = Self.↩️📊appended_list

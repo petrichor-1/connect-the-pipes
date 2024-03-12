@@ -1,0 +1,49 @@
+Import "advanced.htn"
+
+custom_block get_probable_date_format:
+	hour_UTC = floor(User.time % 3600000 / 3600000)
+	time_zone = 24 - User.hour - hour_UTC
+	check_if_else(time_zone <= 8 and time_zone >= 4):
+		Self.↩️formatted_date = join(User.month, with: join("/", with: join(User.day, with: join("/", with: User.year))))
+	else:
+		Self.↩️formatted_date = join(User.day, with: join("/", with: join(User.month, with: join("/", with: User.year))))
+
+custom_block get_month_name:
+	check_if_else(User.month == 1):
+		Self.↩️month_name = "January"
+	else:
+		check_if_else(User.month == 2):
+			Self.↩️month_name = "February"
+		else:
+			check_if_else(User.month == 3):
+				Self.↩️month_name = "March"
+			else:
+				check_if_else(User.month == 4):
+					Self.↩️month_name = "April"
+				else:
+					check_if_else(User.month == 5):
+						Self.↩️month_name = "May"
+					else:
+						check_if_else(User.month == 6):
+							Self.↩️month_name = "June"
+						else:
+							check_if_else(User.month == 7):
+								Self.↩️month_name = "July"
+							else:
+								check_if_else(User.month == 8):
+									Self.↩️month_name = "August"
+								else:
+									check_if_else(User.month == 9):
+										Self.↩️month_name = "September"
+									else:
+										check_if_else(User.month == 10):
+											Self.↩️month_name = "October"
+										else:
+											check_if_else(User.month == 11):
+												Self.↩️month_name = "November"
+											else:
+												check_if_else(User.month == 12):
+													Self.↩️month_name = "December"
+												else:
+													check_once_if(User.month == 014):
+														Self.↩️month_name = "Oh.. it's finally 2019?"
