@@ -32,11 +32,15 @@ Scene Game:
 				broadcast_message(named: Game.📣back_to_level_select)
 		When i_get_a_message(Game.📣x_pressed):
 			check_once_if(Self.clone_index == 1 and Game.is_win_screen_showing == "true"):
-				broadcast_message(named: Game.📣play)
+				check_once_if(Game.daily_challenge_active != "true"):
+					broadcast_message(named: Game.📣play)
 		When i_get_a_message(Game.📣a_pressed):
 			check_once_if(Self.clone_index == 1 and Game.is_win_screen_showing == "true"):
 				check_if_else(Game.current_level_index >= 1000):
 					broadcast_message(named: Game.📣back_to_level_select)
 				else:
-					increase(Game.current_level_index, by: 1)
-					broadcast_message(named: Game.📣play)
+					check_if_else(Game.daily_challenge_active == "true" and Game.current_level_index >= 10):
+						broadcast_message(named: "sum")
+					else:
+						increase(Game.current_level_index, by: 1)
+						broadcast_message(named: Game.📣play)

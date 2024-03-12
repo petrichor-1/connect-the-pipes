@@ -7,6 +7,7 @@ Import "../helpers/stars.htn"
 Import "../helpers/dateFormats.htn"
 Import "./winScreenControllerSupport.htn"
 Import "./hideOnPlay.htn"
+Import "../dailyChallengeSummary.htn"
 
 Scene game:
 	square win_screen:
@@ -148,8 +149,13 @@ Scene game:
 			check_if_else(Game.current_level_index >= 1000):
 				broadcast_message(named: Game.📣back_to_level_select)
 			else:
-				increase(Game.current_level_index, by: 1)
-				broadcast_message(named: Game.📣play)
+				check_if_else(Game.daily_challenge_active == "true" and Game.current_level_index >= 10):
+					change_scene(to: Scenes.daily_challenge_summary)
+				else:
+					increase(Game.current_level_index, by: 1)
+					broadcast_message(named: Game.📣play)
+		When i_get_a_message("sum"):
+			change_scene(to: Scenes.daily_challenge_summary)
 
 	text replay_level_button(text: "↺"):
 		custom_rule hide_on_play
@@ -170,11 +176,13 @@ Scene game:
 				set_image(square)
 				set_width(182, height: 182)
 		When i_get_a_message(Game.📣show_win_buttons):
-			bring_to_front
-			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
-			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+			check_once_if(Game.daily_challenge_active != "true"):
+				bring_to_front
+				# Just the last clone will be 99% invisible. This lets it be tapped but not seen
+				custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
 		When is_tapped(Self):
-			broadcast_message(named: Game.📣play)
+			check_once_if(Game.daily_challenge_active != "true"):
+				broadcast_message(named: Game.📣play)
 
 	rounded_arrow win_screen_back_button:
 		custom_rule hide_on_play
