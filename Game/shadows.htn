@@ -16,6 +16,9 @@ Scene game:
 			else:
 				Original_object.clone_index_offset = Self.clone_index
 				destroy
+		When i_get_a_message(Game.📣remove_shadows):
+			check_once_if(Self.clone_index != 0):
+				destroy
 		When object_is_cloned:
 			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)

@@ -11,6 +11,7 @@ Import "./shadows.htn"
 Import "./textHints.htn"
 Import "./levelControllerSupport.htn"
 Import "./backButtonControllerSupport.htn"
+Import "./lagControl.htn"
 
 Scene game:
 	text level_generator(text: ""):

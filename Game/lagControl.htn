@@ -1,0 +1,25 @@
+Import "advanced.htn"
+
+Scene game:
+	text lag_control(x_position: 512, y_position: 384):
+		Game.📣remove_shadows = "Remove existing shadows"
+		frame_time = 0
+		last_frame_at = User.time
+		bad_windows = 0
+		When game_is_playing:
+			frame_time = User.time - last_frame_at
+			last_frame_at = User.time
+		When game_is_playing:
+			window_size = 5
+			total_this_window = 0
+			repeat(times: window_size):
+				increase(total_this_window, by: frame_time)
+			average = total_this_window / window_size
+			check_if_else(average > 20):
+				increase(bad_windows, by: 1)
+				check_once_if(bad_windows > 10):
+					broadcast_message(named: Game.📣remove_shadows)
+			else:
+				bad_windows = 0
+			set_text(to: average, color: "HSB(0,0,0)")
+			bring_to_front
