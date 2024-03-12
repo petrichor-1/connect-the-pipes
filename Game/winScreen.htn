@@ -4,6 +4,7 @@ Import "../helpers/animation.htn"
 Import "../helpers/tapsStorage.htn"
 Import "../helpers/lists.htn"
 Import "../helpers/stars.htn"
+Import "../helpers/dateFormats.htn"
 Import "./winScreenControllerSupport.htn"
 Import "./hideOnPlay.htn"
 
@@ -44,7 +45,11 @@ Scene game:
 		When game_starts:
 			set_invisibility(percent: 100)
 		When i_get_a_message(Game.📣Success):
-			set_text(to: join("Level ", with: join(Game.board_width, with: join("x", with: join(Game.board_height, with: join(" – ", with: Game.current_level_index))))), color: h(Game.primary_color_hue, s: 5, b: 5))
+			check_if_else(Game.daily_challenge_active == "true"):
+				custom_block get_probable_date_format
+				set_text(to: join("Daily challenge ", with: join(Self.↩️formatted_date, with: join(" – ", with: join(Game.current_level_index, with: "/10")))), color: h(Game.primary_color_hue, s: 5, b: 5))
+			else:
+				set_text(to: join("Level ", with: join(Game.board_width, with: join("x", with: join(Game.board_height, with: join(" – ", with: Game.current_level_index))))), color: h(Game.primary_color_hue, s: 5, b: 5))
 			wait(seconds: 0)
 			set_position(to_x: Game.width / 2, y: Game.height - 8 - 0.5 * Self.height)
 			bring_to_front
@@ -67,25 +72,27 @@ Scene game:
 			set_invisibility(percent: 100)
 			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 68 - Self.height)
 		When i_get_a_message(Game.📣Success):
-			custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
-			check_once_if (Game.total_taps < Self.↩️taps):
-				custom_block set_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index, taps: Game.total_taps)
+			check_once_if(Game.daily_challenge_active != "true"):
 				custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
-				bring_to_front
-				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+				check_once_if (Game.total_taps < Self.↩️taps):
+					custom_block set_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index, taps: Game.total_taps)
+					custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
+					bring_to_front
+					custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
 	text win_screen_new_levels_unlocked(text: "New levels unlocked!", resize_scale: 0.75):
 		custom_rule hide_on_play
 		When game_starts:
 			set_invisibility(percent: 100)
 			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 72 - Self.height * 2)
 		When i_get_a_message(Game.📣Success):
-			custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
-			check_once_if(Self.↩️📊list_item <= Game.current_level_index):
-				custom_block set_item_in(list: User.progress, at_index: Game.board_width - 4, new_item: Game.current_level_index + 1)
-				User.progress = Self.↩️📊set_list
-				check_once_if(Game.current_level_index == 50):
-					bring_to_front
-					custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
+			check_once_if(Game.daily_challenge_active != "true"):
+				custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+				check_once_if(Self.↩️📊list_item <= Game.current_level_index):
+					custom_block set_item_in(list: User.progress, at_index: Game.board_width - 4, new_item: Game.current_level_index + 1)
+					User.progress = Self.↩️📊set_list
+					check_once_if(Game.current_level_index == 50):
+						bring_to_front
+						custom_block ease_invisibility(from: 100, to: 0, milliseconds: 900)
 
 	star win_screen_stars:
 		custom_rule hide_on_play
