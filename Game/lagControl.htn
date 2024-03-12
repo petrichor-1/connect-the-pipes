@@ -15,9 +15,9 @@ Scene game:
 			repeat(times: window_size):
 				increase(total_this_window, by: frame_time)
 			average = total_this_window / window_size
-			check_if_else(average > 20):
+			check_if_else(average > 21):
 				increase(bad_windows, by: 1)
-				check_once_if(bad_windows > 10 and User.time - last_feature_disabled_at > 5000):
+				check_once_if(bad_windows > 15 and User.time - last_feature_disabled_at > 5000):
 					check_if_else(Game.shadows_disabled != "true"):
 						Game.shadows_disabled = "true"
 						last_feature_disabled_at = User.time
