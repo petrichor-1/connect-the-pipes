@@ -109,13 +109,19 @@ Scene game:
 			Self.tile = Self.↩️tile
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
-			wait(seconds: 0)
-			aspect_ratio = Self.height / Self.width
-			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
 			Self.h = Game.primary_color_hue
 			Self.s = Game.primary_color_saturation + 60
 			Self.b = Game.primary_color_brightness + 40
 			set_color(h(Self.h, s: Self.s, b: Self.b))
+			aspect_ratio = Self.height / Self.width
+			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
+			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
+			repeat_forever:
+				check_once_if(Self.displayed_rotation != Self.times_tapped * 90):
+					Self.is_updating_position = "true"
+					custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
+					Self.is_updating_position = "false"
 		When i_get_a_message(Game.📣update_colors):
 			check_if_else(Self.is_connected_to_main_tile == "true"):
 				custom_block ease_color(from_h: Self.h, to_h: Game.primary_color_hue, from_s: Self.s, to_s: Game.primary_color_saturation + 60, from_b: Self.b, to_b: Game.primary_color_brightness + 50, milliseconds: 100)
@@ -133,12 +139,10 @@ Scene game:
 				Game.👥rotations = ":"
 			else:
 				Game.👥rotations = join(Game.👥rotations, with: Self.times_tapped)
-		When Self.clone_index > 0:
+		When Self.is_updating_position == "true":
 			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
-		When Self.clone_index > 0:
+		When Self.is_updating_position == "true":
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
-		When Self.displayed_rotation != Self.times_tapped * 90:
-			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
 		When is_tapped(Screen):
 			check_once_if(Game.is_win_screen_showing != "true"):
 				check_once_if(absolute_value(Game.last_touch_x - Self.center_x_position) < Self.tile_size / 2 and absolute_value(Game.last_touch_y - Self.center_y_position) < Self.tile_size / 2):
@@ -328,12 +332,18 @@ Scene game:
 			wait(seconds: 0)
 			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
 			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
-		When Self.clone_index > 0:
-			set_position(to_x:Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y:Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
-		When Self.clone_index > 0:
+			Self.displayed_rotation = Self.times_tapped * 90
+			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
-		When Self.displayed_rotation != Self.times_tapped * 90:
-			custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
+			repeat_forever:
+				check_once_if(Self.displayed_rotation != Self.times_tapped * 90):
+					Self.is_updating_position = "true"
+					custom_block ease_self_displayed_rotation(from: Self.displayed_rotation, to: Self.times_tapped * 90, milliseconds: 100)
+					Self.is_updating_position = "false"
+		When Self.is_updating_position == "true":
+			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
+		When Self.is_updating_position == "true":
+			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
 		When Self.clone_index > 0:
 			Self.times_tapped = Game.main_tile_times_tapped
 
