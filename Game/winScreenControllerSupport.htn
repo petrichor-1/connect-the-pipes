@@ -1,0 +1,42 @@
+Import "secretblocks.htn"
+Import "../controller support/pipes.htn"
+Import "../helpers/animation.htn"
+Import "./hideOnPlay.htn"
+
+Scene Game:
+	text win_screen_controller_support:
+		custom_rule hide_on_play
+		When i_get_a_message(Game.📣any_controller_button_pressed):
+			check_once_if(Self.clone_index == 0):
+				set_invisibility(percent: 100)
+				create_clones_of_this_object(times: 3)
+				destroy
+		When object_is_cloned:
+			check_if_else(Self.clone_index == 1):
+				color = "red"
+				set_text(to: "Ⓑ", color: color)
+			else:
+				check_if_else(Self.clone_index == 2):
+					color = "blue"
+					set_text(to: "Ⓧ", color: color)
+				else:
+					check_once_if(Self.clone_index == 3):
+						color = "green"
+						set_text(to: "Ⓐ", color: color)
+			set_position(to_x: Game.width / 2 - 182 + subtract(Self.clone_index, 1) * 182, y: Game.height * 0.2 - 100)
+		When i_get_a_message(Game.📣show_win_buttons):
+			bring_to_front
+			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 250)
+		When i_get_a_message(Game.📣b_pressed):
+			check_once_if(Self.clone_index == 1 and Game.is_win_screen_showing == "true"):
+				broadcast_message(named: Game.📣back_to_level_select)
+		When i_get_a_message(Game.📣x_pressed):
+			check_once_if(Self.clone_index == 1 and Game.is_win_screen_showing == "true"):
+				broadcast_message(named: Game.📣play)
+		When i_get_a_message(Game.📣a_pressed):
+			check_once_if(Self.clone_index == 1 and Game.is_win_screen_showing == "true"):
+				check_if_else(Game.current_level_index >= 1000):
+					broadcast_message(named: Game.📣back_to_level_select)
+				else:
+					increase(Game.current_level_index, by: 1)
+					broadcast_message(named: Game.📣play)

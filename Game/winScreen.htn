@@ -4,6 +4,8 @@ Import "../helpers/animation.htn"
 Import "../helpers/tapsStorage.htn"
 Import "../helpers/lists.htn"
 Import "../helpers/stars.htn"
+Import "./winScreenControllerSupport.htn"
+Import "./hideOnPlay.htn"
 
 Scene game:
 	square win_screen:
@@ -190,7 +192,3 @@ Scene game:
 			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
 		When is_tapped(Self):
 			broadcast_message(named: Game.📣back_to_level_select)
-
-custom_rule hide_on_play:
-	When i_get_a_message(Game.📣play):
-		set_invisibility(percent: 100)
