@@ -18,6 +18,8 @@ Scene game:
 		left_x_held_at = 0
 		left_y_pressed_at = "never"
 		left_y_held_at = 0
+		right_pressed_at = "never"
+		right_held_at = 0
 		custom_rule 🎮ae_mod_interface
 		When game_starts:
 			wait(seconds: 0)
@@ -85,6 +87,36 @@ Scene game:
 									broadcast_message(named: Game.📣dpad_up_pressed)
 								left_y_pressed_at = "never"
 								left_y_held_at = 0
+				check_if_else (Self.🎮rx < 0):
+					check_if_else(Self.🎮rx < -0.6):
+						check_if_else(right_pressed_at == "never"):
+							right_pressed_at = User.time
+						else:
+							check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
+								right_held_at = User.time
+								broadcast_message(named: Game.📣b_pressed)
+					else:
+						check_once_if(Self.🎮rx >= -0.6):
+							check_once_if(right_pressed_at != "never"):
+								check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
+									broadcast_message(named: Game.📣b_pressed)
+								right_pressed_at = "never"
+								right_held_at = 0
+				else:
+					check_if_else(Self.🎮rx > 0.6):
+						check_if_else(right_pressed_at == "never"):
+							right_pressed_at = User.time
+						else:
+							check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
+								right_held_at = User.time
+								broadcast_message(named: Game.📣a_pressed)
+					else:
+						check_once_if(Self.🎮rx <= 0.6):
+							check_once_if(right_pressed_at != "never"):
+								check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
+									broadcast_message(named: Game.📣a_pressed)
+								right_pressed_at = "never"
+								right_held_at = 0
 		When object_is_cloned:
 			check_if_else(Self.clone_index == 15):
 				Self.📣press_message = Game.📣dpad_right_pressed
