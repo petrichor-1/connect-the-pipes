@@ -304,7 +304,7 @@ Scene game:
 					set_image(flower)
 			set_color(h(0, s: 0, b: 95))
 			aspect_ratio = Self.height / Self.width
-			set_width(0.1 * Self.tile_size * Self.📺width_multiplier, height: 0.1 * aspect_ratio * Self.tile_size * Self.📺height_multiplier)
+			set_width(0.2 * Self.tile_size * Self.📺width_multiplier, height: 0.2 * aspect_ratio * Self.tile_size * Self.📺width_multiplier)
 		When object_is_cloned:
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
 		When object_is_cloned:
