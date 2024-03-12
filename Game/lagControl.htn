@@ -25,5 +25,5 @@ Scene game:
 						Game.connection_colors_disabled = "true"
 			else:
 				bad_windows = 0
-			set_text(to: average, color: "HSB(0,0,0)")
-			bring_to_front
+			# set_text(to: average, color: "HSB(0,0,0)")
+			# bring_to_front
