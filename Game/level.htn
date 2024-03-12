@@ -351,17 +351,21 @@ custom_rule display_connection_status_to_main_tile:
 	index = 0
 	rotated_amount = 0
 	When i_get_a_message(Game.📣update_main_tile):
-		check_if_else(Self.clone_index == 0):
-			Original_object.rotations_list = ":"
-			Game.connected_amount = 0
+		check_if_else(Game.connection_colors_disabled == "true"):
+			Self.is_connected_to_main_tile = "true"
 		else:
-			Original_object.rotations_list = join(Original_object.rotations_list, with: Self.times_tapped % Self.symmetry)
+			check_if_else(Self.clone_index == 0):
+				Original_object.rotations_list = ":"
+				Game.connected_amount = 0
+			else:
+				Original_object.rotations_list = join(Original_object.rotations_list, with: Self.times_tapped % Self.symmetry)
 	When i_get_a_message(Game.📣update_main_tile):
-		check_if_else(Self.index == Game.main_tile_index):
-			Self.is_connected_to_main_tile = "false"
-			broadcast_message(named: Self.📣connect_to_main_tile)
-		else:
-			Self.is_connected_to_main_tile = "false"
+		check_if_else(Game.connection_colors_disabled != "true"):
+			check_if_else(Self.index == Game.main_tile_index):
+				Self.is_connected_to_main_tile = "false"
+				broadcast_message(named: Self.📣connect_to_main_tile)
+			else:
+				Self.is_connected_to_main_tile = "false"
 	# Rotate my connections
 	When i_get_a_message(Self.📣connect_to_main_tile):
 		check_once_if(Self.is_connected_to_main_tile == "false"):

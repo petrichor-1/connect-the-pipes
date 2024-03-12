@@ -5,6 +5,7 @@ Scene game:
 		frame_time = 0
 		last_frame_at = User.time
 		bad_windows = 0
+		last_feature_disabled_at = 0
 		When game_is_playing:
 			frame_time = User.time - last_frame_at
 			last_frame_at = User.time
@@ -16,8 +17,12 @@ Scene game:
 			average = total_this_window / window_size
 			check_if_else(average > 20):
 				increase(bad_windows, by: 1)
-				check_once_if(bad_windows > 10):
-					Game.shadows_disabled = "true"
+				check_once_if(bad_windows > 10 and User.time - last_feature_disabled_at > 5000):
+					check_if_else(Game.shadows_disabled != "true"):
+						Game.shadows_disabled = "true"
+						last_feature_disabled_at = User.time
+					else:
+						Game.connection_colors_disabled = "true"
 			else:
 				bad_windows = 0
 			set_text(to: average, color: "HSB(0,0,0)")
