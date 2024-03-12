@@ -12,6 +12,7 @@ Scene game:
 		Game.📣dpad_down_pressed = "dpad down pressed"
 		Game.📣a_pressed = "a pressed"
 		Game.📣b_pressed = "b pressed"
+		Game.📣any_controller_button_pressed = "Controller in use"
 		pressed_at = "never"
 		repeatedly_pressed_at = 0
 		left_x_pressed_at = "never"
@@ -132,8 +133,6 @@ Scene game:
 						else:
 							check_if_else(Self.clone_index == 1):
 								Self.📣press_message = Game.📣b_pressed
-							else:
-								destroy
 			repeat_forever:
 				check_once_if(User.time - pressed_at > milliseconds_for_single_press and pressed_at == 1 * pressed_at):
 					check_once_if(User.time - repeatedly_pressed_at > repeat_press_interval):
@@ -144,5 +143,6 @@ Scene game:
 		When i_get_a_message(join(Self.📣button_unpressed, with: Self.clone_index)):
 			check_if_else(User.time - pressed_at < milliseconds_for_single_press):
 				broadcast_message(named: Self.📣press_message)
+				broadcast_message(named: Game.📣any_controller_button_pressed)
 			pressed_at = "never"
 			repeatedly_pressed_at = 0

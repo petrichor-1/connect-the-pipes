@@ -1,0 +1,20 @@
+custom_block display_text(origin_x: 64, origin_y: 4, text: " [#0D0D0D]Black [#F2F2F2]White [green]Green [#F2F2F2]White"):
+	custom_block get_text_up_to(regex: "^\[", current: character_at_index(in: text, at: 0), remaining: characters_between(in: text, between: 1, and: length(text)))
+	current = character_at_index(in: Self.↩️text_after_bracket, at: 0)
+	text = characters_between(in: Self.↩️text_after_bracket, between: 1, and: length(Self.↩️text_after_bracket))
+	set_text(to: Self.↩️text_up_to_bracket, color: Self.color)
+	custom_block get_text_up_to(regex: "^\]", current: current, remaining: text)
+	Self.color = Self.↩️text_up_to_bracket
+	text = Self.↩️text_after_bracket
+	wait(seconds: 0)
+	set_origin(to_x: origin_x, y: origin_y)
+	create_a_clone_of_this_object
+	check_once_if(length(text) > 1):
+		custom_block display_text(origin_x: Self.origin_x + Self.width, origin_y: origin_y, text: text)
+
+custom_block get_text_up_to(regex: "^\[", current: "", remaining: "hello [there]"):
+	check_if_else(remaining MATCHES regex or length(remaining) <= 1):
+		Self.↩️text_up_to_bracket = current
+		Self.↩️text_after_bracket = characters_between(in: remaining, between: 1, and: length(remaining))
+	else:
+		custom_block get_text_up_to(regex: regex, current: join(current, with: character_at_index(in: remaining, at: 0)), remaining: characters_between(in: remaining, between: 1, and: length(remaining)))

@@ -1,6 +1,7 @@
 Import "../controller support/pipes.htn"
 Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
+Import "../helpers/textRendering.htn"
 
 Scene game:
 	rounded_square controller_rotator:
@@ -55,3 +56,14 @@ Scene game:
 			check_once_if(Game.is_win_screen_showing != "true"):
 				Game.🕹️index = Self.index
 				broadcast_message(named: Game.📣🕹️rotate_clockwise)
+
+	text controller_hints(resize_scale: 0.5):
+		When i_get_a_message(Game.📣any_controller_button_pressed):
+			check_once_if(Self.total_clones == 1):
+				set_invisibility(percent: 100)
+				Self.color = "#0D0D0D"
+				custom_block display_text(origin_x: 64, origin_y: 4, text: "✚ [#F2F2F2]Move selection [green]Ⓐ [#F2F2F2]rotate ↺ [red]Ⓑ [#F2F2F2]rotate ↻ ")
+				broadcast_message(named: Self.name)
+				destroy
+		When i_get_a_message(Self.name):
+			set_invisibility(percent: 0)
