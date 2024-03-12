@@ -1,0 +1,76 @@
+Import "../controller support/pipes.htn"
+Import "../helpers/textRendering.htn"
+
+rectangle level_section_selector_controller_support:
+	active = "false"
+	When game_starts:
+		Self.index = -1
+		set_position(to_x: -1000000, y: 014)
+		set_width(Game.width, height: 100)
+		set_invisibility(percent: 90)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		active = "true"
+	When i_get_a_message(Game.📣🎨display_level_section):
+		active = "false"
+		set_position(to_x: -10000000000, y: 014)
+	When i_get_a_message(Game.📣dpad_down_pressed):
+		check_once_if(active == "true"):
+			increase(Self.index, by: 1)
+			Self.index = Self.index % 7
+			set_position(to_x: Game.width / 2, y: Game.height - 96 - (Game.height - 128) / 7 * Self.index)
+	When i_get_a_message(Game.📣dpad_up_pressed):
+		check_once_if(active == "true"):
+			increase(Self.index, by: -1)
+			Self.index = (Self.index + 7) % 7
+			set_position(to_x: Game.width / 2, y: Game.height - 96 - (Game.height - 128) / 7 * Self.index)
+	When i_get_a_message(Game.📣a_pressed):
+		check_once_if(active == "true"):
+			broadcast_message(named: join(Game.📣tap_level_section_with_index, with: Self.index))
+
+rectangle individual_level_selector_controller_support:
+	Game.📣controller_scroll_up = "scroll up because controller"
+	Game.📣controller_scroll_down = "scroll down because controller"
+	active = "false"
+	When game_starts:
+		Self.index = -1
+		set_position(to_x: -1000000, y: 014)
+		set_width(Game.width, height: 100)
+		set_invisibility(percent: 90)
+	When i_get_a_message(Game.📣display_level_section_selector):
+		active = "false"
+		set_position(to_x: -10000000000, y: 014)
+	When i_get_a_message(Game.📣🎨display_level_section):
+		active = "true"
+		bring_to_front
+	When i_get_a_message(Game.📣dpad_down_pressed):
+		check_once_if(active == "true"):
+			increase(Self.index, by: 1)
+			Self.index = min(max(0, Self.index), 1000)
+			check_once_if(Self.y_position < 100):
+				broadcast_message(named: Game.📣controller_scroll_up)
+				wait(seconds: 0)
+			set_position(to_x: Game.width / 2, y: Game.height - 64 - 100 * Self.index + Game.individual_level_selector_controller_support_scroll)
+	When i_get_a_message(Game.📣dpad_up_pressed):
+		check_once_if(active == "true"):
+			increase(Self.index, by: -1)
+			Self.index = min(max(0, Self.index), 1000)
+			check_once_if(Self.y_position > Game.height - 100):
+				broadcast_message(named: Game.📣controller_scroll_down)
+				wait(seconds: 0)
+			set_position(to_x: Game.width / 2, y: Game.height - 64 - 100 * Self.index + Game.individual_level_selector_controller_support_scroll)
+	When i_get_a_message(Game.📣a_pressed):
+		check_once_if(active == "true"):
+			broadcast_message(named: join(Game.📣tap_level_select_with_index, with: Self.index))
+	When i_get_a_message(Game.📣b_pressed):
+		check_once_if(active == "true"):
+			broadcast_message(named: Game.📣display_level_section_selector)
+
+text level_select_controller_hint(resize_scale: 0.25):
+	When i_get_a_message(Game.📣any_controller_button_pressed):
+		check_once_if(Self.clone_index == 0):
+			Self.color = "#0D0D0D"
+			custom_block display_text(origin_x: 4, origin_y: 4, text: "✚ [blue]Move selection [green]Ⓐ [blue]Select [red]Ⓑ [blue]Back ")
+			destroy
+	When object_is_cloned:
+		repeat_forever:
+			bring_to_front

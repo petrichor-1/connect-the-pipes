@@ -6,10 +6,12 @@ Import "../helpers/lists.htn"
 Import "./drawTableButtonPress.htn"
 Import "../helpers/tapsStorage.htn"
 Import "../helpers/stars.htn"
+Import "./controllerSupport.htn"
 
 text level_names(text: "4x4"):
 	Game.📣display_level_section_selector = "display main screen"
 	Game.📣🎨display_level_section = "display level section"
+	Game.📣tap_level_section_with_index = "Tap level section with index "
 	Game.level_section_colors = "035032090077028087138047082193027066318018066251040043083067019🐠"
 	When game_starts:
 		set_background(color: h(0, s: 0, b: 90))
@@ -37,20 +39,22 @@ text level_names(text: "4x4"):
 		custom_block ease_position_and_size(from_x: Self.x_position, to_x: -200, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When is_tapped(Screen):
 		check_once_if(absolute_value(Game.last_touch_y - Self.y_position) < (Game.height - 128) / Self.total_clones / 2 and absolute_value(Self.x_position - Game.width / 2) < 10):
-			check_once_if(Self.amount_til_unlocked <= 0):
-				Game.👆y_position = Self.y_position
-				Game.👆height = (Game.height - 128) / Self.total_clones
-				broadcast_message(named: Game.📣👆draw)
-				Game.🎨level_section_index = Self.clone_index
-				Game.level_section_name = Self.text
-				Game.primary_color_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
-				Game.primary_color_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
-				Game.primary_color_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
-				Game.board_width = 4 + Self.clone_index
-				Game.board_height = Game.board_width
-				broadcast_message(named: Game.📣🎨display_level_section)
-				wait_milliseconds(100)
-				clear
+			broadcast_message(named: join(Game.📣tap_level_section_with_index, with: Self.clone_index))
+	When i_get_a_message(join(Game.📣tap_level_section_with_index, with: Self.clone_index)):
+		check_once_if(Self.amount_til_unlocked <= 0):
+			Game.👆y_position = Self.y_position
+			Game.👆height = (Game.height - 128) / Self.total_clones
+			broadcast_message(named: Game.📣👆draw)
+			Game.🎨level_section_index = Self.clone_index
+			Game.level_section_name = Self.text
+			Game.primary_color_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
+			Game.primary_color_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
+			Game.primary_color_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
+			Game.board_width = 4 + Self.clone_index
+			Game.board_height = Game.board_width
+			broadcast_message(named: Game.📣🎨display_level_section)
+			wait_milliseconds(100)
+			clear
 
 text level_section_lines(text: ""):
 	When i_get_a_message(Game.📣display_level_section_selector):
@@ -97,8 +101,18 @@ text button_drawer(text: ""):
 
 square individual_level_select_buttons:
 	Game.📣play_level = "Play"
+	Game.📣tap_level_select_with_index = "tap level select with index "
+	When i_get_a_message(Game.📣controller_scroll_up):
+		check_once_if(Self.clone_index == 1):
+			increase(individual_level_select_buttons.scroll, by: 100)
+			individual_level_select_buttons.scroll = min(individual_level_select_buttons.scroll, 100100 - Game.height)
+	When i_get_a_message(Game.📣controller_scroll_down):
+		check_once_if(Self.clone_index == 1):
+			increase(individual_level_select_buttons.scroll, by: -100)
+			individual_level_select_buttons.scroll = min(individual_level_select_buttons.scroll, 100100 - Game.height)
 	When game_is_playing:
 		individual_level_select_buttons.scroll = min(individual_level_select_buttons.scroll, 100100 - Game.height)
+		Game.individual_level_selector_controller_support_scroll = individual_level_select_buttons.scroll
 	When game_starts:
 		check_once_if(Self.total_clones == 1):
 			set_position(to_x: 10000, y: 014)
@@ -135,10 +149,12 @@ square individual_level_select_buttons:
 		individual_level_select_buttons.scroll = max(0, individual_level_select_buttons.scroll)
 	When touch_ends:
 		check_once_if(User.time - Self.tap_time < 500):
-			custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
-			check_once_if (Self.↩️📊list_item >= Self.index):
-				Game.current_level_index = Self.index
-				broadcast_message(named: Game.📣play_level)
+			broadcast_message(named: join(Game.📣tap_level_select_with_index, with: Self.index))
+	When i_get_a_message(join(Game.📣tap_level_select_with_index, with: Self.index)):
+		custom_block get_item_in(list: User.progress, at_index: Game.board_width - 4)
+		check_once_if (Self.↩️📊list_item >= Self.index):
+			Game.current_level_index = Self.index
+			broadcast_message(named: Game.📣play_level)
 	custom_rule individual_level_select_hide:
 		When i_get_a_message(Game.📣display_level_section_selector):
 			Self.should_scroll = "false"

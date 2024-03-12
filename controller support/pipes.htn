@@ -1,156 +1,161 @@
 Import "advanced.htn"
 Import "./interface.htn"
 
-Scene game:
-	text low_level_controller_support:
-		# Provide controller support in Awesome_E's modded webplayer
-		milliseconds_for_single_press = 1000
-		repeat_press_interval = 500
-		Game.📣dpad_right_pressed = "dpad right pressed"
-		Game.📣dpad_left_pressed = "dpad left pressed"
-		Game.📣dpad_up_pressed = "dpad up pressed"
-		Game.📣dpad_down_pressed = "dpad down pressed"
-		Game.📣a_pressed = "a pressed"
-		Game.📣b_pressed = "b pressed"
-		Game.📣x_pressed = "x pressed"
-		Game.📣menu_pressed = "menu pressed"
-		Game.📣any_controller_button_pressed = "Controller in use"
+Scene Game:
+	text low_level_controller_support_level:
+		custom_rule low_level_controller_support
+
+text low_level_controller_support_level_select:
+	custom_rule low_level_controller_support
+custom_rule low_level_controller_support:
+	# Provide controller support in Awesome_E's modded webplayer
+	milliseconds_for_single_press = 1000
+	repeat_press_interval = 500
+	Game.📣dpad_right_pressed = "dpad right pressed"
+	Game.📣dpad_left_pressed = "dpad left pressed"
+	Game.📣dpad_up_pressed = "dpad up pressed"
+	Game.📣dpad_down_pressed = "dpad down pressed"
+	Game.📣a_pressed = "a pressed"
+	Game.📣b_pressed = "b pressed"
+	Game.📣x_pressed = "x pressed"
+	Game.📣menu_pressed = "menu pressed"
+	Game.📣any_controller_button_pressed = "Controller in use"
+	pressed_at = "never"
+	repeatedly_pressed_at = 0
+	left_x_pressed_at = "never"
+	left_x_held_at = 0
+	left_y_pressed_at = "never"
+	left_y_held_at = 0
+	right_pressed_at = "never"
+	right_held_at = 0
+	custom_rule 🎮ae_mod_interface
+	When game_starts:
+		wait(seconds: 0)
+		check_once_if(Self.🎮controllers_supported != "true"):
+			destroy
+		Self.📣press_message = Game.📣a_pressed
+		repeat_forever:
+			check_if_else (Self.🎮lx < 0):
+				check_if_else(Self.🎮lx < -0.6):
+					check_if_else(left_x_pressed_at == "never"):
+						left_x_pressed_at = User.time
+					else:
+						check_once_if(User.time - left_x_pressed_at > milliseconds_for_single_press and User.time - left_x_held_at > repeat_press_interval):
+							left_x_held_at = User.time
+							broadcast_message(named: Game.📣dpad_left_pressed)
+				else:
+					check_once_if(Self.🎮lx >= -0.6):
+						check_once_if(left_x_pressed_at != "never"):
+							check_once_if(User.time - left_x_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣dpad_left_pressed)
+							left_x_pressed_at = "never"
+							left_x_held_at = 0
+			else:
+				check_if_else(Self.🎮lx > 0.6):
+					check_if_else(left_x_pressed_at == "never"):
+						left_x_pressed_at = User.time
+					else:
+						check_once_if(User.time - left_x_pressed_at > milliseconds_for_single_press and User.time - left_x_held_at > repeat_press_interval):
+							left_x_held_at = User.time
+							broadcast_message(named: Game.📣dpad_right_pressed)
+				else:
+					check_once_if(Self.🎮lx <= 0.6):
+						check_once_if(left_x_pressed_at != "never"):
+							check_once_if(User.time - left_x_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣dpad_right_pressed)
+							left_x_pressed_at = "never"
+							left_x_held_at = 0
+			check_if_else (Self.🎮ly < 0):
+				check_if_else(Self.🎮ly < -0.6):
+					check_if_else(left_y_pressed_at == "never"):
+						left_y_pressed_at = User.time
+					else:
+						check_once_if(User.time - left_y_pressed_at > milliseconds_for_single_press and User.time - left_y_held_at > repeat_press_interval):
+							left_y_held_at = User.time
+							broadcast_message(named: Game.📣dpad_down_pressed)
+				else:
+					check_once_if(Self.🎮ly >= -0.6):
+						check_once_if(left_y_pressed_at != "never"):
+							check_once_if(User.time - left_y_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣dpad_down_pressed)
+							left_y_pressed_at = "never"
+							left_y_held_at = 0
+			else:
+				check_if_else(Self.🎮ly > 0.6):
+					check_if_else(left_y_pressed_at == "never"):
+						left_y_pressed_at = User.time
+					else:
+						check_once_if(User.time - left_y_pressed_at > milliseconds_for_single_press and User.time - left_y_held_at > repeat_press_interval):
+							left_y_held_at = User.time
+							broadcast_message(named: Game.📣dpad_up_pressed)
+				else:
+					check_once_if(Self.🎮ly <= 0.6):
+						check_once_if(left_y_pressed_at != "never"):
+							check_once_if(User.time - left_y_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣dpad_up_pressed)
+							left_y_pressed_at = "never"
+							left_y_held_at = 0
+			check_if_else (Self.🎮rx < 0):
+				check_if_else(Self.🎮rx < -0.6):
+					check_if_else(right_pressed_at == "never"):
+						right_pressed_at = User.time
+					else:
+						check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
+							right_held_at = User.time
+							broadcast_message(named: Game.📣b_pressed)
+				else:
+					check_once_if(Self.🎮rx >= -0.6):
+						check_once_if(right_pressed_at != "never"):
+							check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣b_pressed)
+							right_pressed_at = "never"
+							right_held_at = 0
+			else:
+				check_if_else(Self.🎮rx > 0.6):
+					check_if_else(right_pressed_at == "never"):
+						right_pressed_at = User.time
+					else:
+						check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
+							right_held_at = User.time
+							broadcast_message(named: Game.📣a_pressed)
+				else:
+					check_once_if(Self.🎮rx <= 0.6):
+						check_once_if(right_pressed_at != "never"):
+							check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
+								broadcast_message(named: Game.📣a_pressed)
+							right_pressed_at = "never"
+							right_held_at = 0
+	When object_is_cloned:
+		check_if_else(Self.clone_index == 15):
+			Self.📣press_message = Game.📣dpad_right_pressed
+		else:
+			check_if_else(Self.clone_index == 14):
+				Self.📣press_message = Game.📣dpad_left_pressed
+			else:
+				check_if_else(Self.clone_index == 12):
+					Self.📣press_message = Game.📣dpad_up_pressed
+				else:
+					check_if_else(Self.clone_index == 13):
+						Self.📣press_message = Game.📣dpad_down_pressed
+					else:
+						check_if_else(Self.clone_index == 1):
+							Self.📣press_message = Game.📣b_pressed
+						else:
+							check_if_else(Self.clone_index == 2):
+								Self.📣press_message = Game.📣x_pressed
+							else:
+								check_if_else(Self.clone_index == 9):
+									Self.📣press_message = Game.📣menu_pressed
+		repeat_forever:
+			check_once_if(User.time - pressed_at > milliseconds_for_single_press and pressed_at == 1 * pressed_at):
+				check_once_if(User.time - repeatedly_pressed_at > repeat_press_interval):
+					repeatedly_pressed_at = User.time
+					broadcast_message(named: Self.📣press_message)
+	When i_get_a_message(join(Self.📣button_pressed, with: Self.clone_index)):
+		pressed_at = User.time
+	When i_get_a_message(join(Self.📣button_unpressed, with: Self.clone_index)):
+		check_if_else(User.time - pressed_at < milliseconds_for_single_press):
+			broadcast_message(named: Self.📣press_message)
+			broadcast_message(named: Game.📣any_controller_button_pressed)
 		pressed_at = "never"
 		repeatedly_pressed_at = 0
-		left_x_pressed_at = "never"
-		left_x_held_at = 0
-		left_y_pressed_at = "never"
-		left_y_held_at = 0
-		right_pressed_at = "never"
-		right_held_at = 0
-		custom_rule 🎮ae_mod_interface
-		When game_starts:
-			wait(seconds: 0)
-			check_once_if(Self.🎮controllers_supported != "true"):
-				destroy
-			Self.📣press_message = Game.📣a_pressed
-			repeat_forever:
-				check_if_else (Self.🎮lx < 0):
-					check_if_else(Self.🎮lx < -0.6):
-						check_if_else(left_x_pressed_at == "never"):
-							left_x_pressed_at = User.time
-						else:
-							check_once_if(User.time - left_x_pressed_at > milliseconds_for_single_press and User.time - left_x_held_at > repeat_press_interval):
-								left_x_held_at = User.time
-								broadcast_message(named: Game.📣dpad_left_pressed)
-					else:
-						check_once_if(Self.🎮lx >= -0.6):
-							check_once_if(left_x_pressed_at != "never"):
-								check_once_if(User.time - left_x_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣dpad_left_pressed)
-								left_x_pressed_at = "never"
-								left_x_held_at = 0
-				else:
-					check_if_else(Self.🎮lx > 0.6):
-						check_if_else(left_x_pressed_at == "never"):
-							left_x_pressed_at = User.time
-						else:
-							check_once_if(User.time - left_x_pressed_at > milliseconds_for_single_press and User.time - left_x_held_at > repeat_press_interval):
-								left_x_held_at = User.time
-								broadcast_message(named: Game.📣dpad_right_pressed)
-					else:
-						check_once_if(Self.🎮lx <= 0.6):
-							check_once_if(left_x_pressed_at != "never"):
-								check_once_if(User.time - left_x_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣dpad_right_pressed)
-								left_x_pressed_at = "never"
-								left_x_held_at = 0
-				check_if_else (Self.🎮ly < 0):
-					check_if_else(Self.🎮ly < -0.6):
-						check_if_else(left_y_pressed_at == "never"):
-							left_y_pressed_at = User.time
-						else:
-							check_once_if(User.time - left_y_pressed_at > milliseconds_for_single_press and User.time - left_y_held_at > repeat_press_interval):
-								left_y_held_at = User.time
-								broadcast_message(named: Game.📣dpad_down_pressed)
-					else:
-						check_once_if(Self.🎮ly >= -0.6):
-							check_once_if(left_y_pressed_at != "never"):
-								check_once_if(User.time - left_y_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣dpad_down_pressed)
-								left_y_pressed_at = "never"
-								left_y_held_at = 0
-				else:
-					check_if_else(Self.🎮ly > 0.6):
-						check_if_else(left_y_pressed_at == "never"):
-							left_y_pressed_at = User.time
-						else:
-							check_once_if(User.time - left_y_pressed_at > milliseconds_for_single_press and User.time - left_y_held_at > repeat_press_interval):
-								left_y_held_at = User.time
-								broadcast_message(named: Game.📣dpad_up_pressed)
-					else:
-						check_once_if(Self.🎮ly <= 0.6):
-							check_once_if(left_y_pressed_at != "never"):
-								check_once_if(User.time - left_y_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣dpad_up_pressed)
-								left_y_pressed_at = "never"
-								left_y_held_at = 0
-				check_if_else (Self.🎮rx < 0):
-					check_if_else(Self.🎮rx < -0.6):
-						check_if_else(right_pressed_at == "never"):
-							right_pressed_at = User.time
-						else:
-							check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
-								right_held_at = User.time
-								broadcast_message(named: Game.📣b_pressed)
-					else:
-						check_once_if(Self.🎮rx >= -0.6):
-							check_once_if(right_pressed_at != "never"):
-								check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣b_pressed)
-								right_pressed_at = "never"
-								right_held_at = 0
-				else:
-					check_if_else(Self.🎮rx > 0.6):
-						check_if_else(right_pressed_at == "never"):
-							right_pressed_at = User.time
-						else:
-							check_once_if(User.time - right_pressed_at > milliseconds_for_single_press and User.time - right_held_at > repeat_press_interval):
-								right_held_at = User.time
-								broadcast_message(named: Game.📣a_pressed)
-					else:
-						check_once_if(Self.🎮rx <= 0.6):
-							check_once_if(right_pressed_at != "never"):
-								check_once_if(User.time - right_pressed_at < milliseconds_for_single_press):
-									broadcast_message(named: Game.📣a_pressed)
-								right_pressed_at = "never"
-								right_held_at = 0
-		When object_is_cloned:
-			check_if_else(Self.clone_index == 15):
-				Self.📣press_message = Game.📣dpad_right_pressed
-			else:
-				check_if_else(Self.clone_index == 14):
-					Self.📣press_message = Game.📣dpad_left_pressed
-				else:
-					check_if_else(Self.clone_index == 12):
-						Self.📣press_message = Game.📣dpad_up_pressed
-					else:
-						check_if_else(Self.clone_index == 13):
-							Self.📣press_message = Game.📣dpad_down_pressed
-						else:
-							check_if_else(Self.clone_index == 1):
-								Self.📣press_message = Game.📣b_pressed
-							else:
-								check_if_else(Self.clone_index == 2):
-									Self.📣press_message = Game.📣x_pressed
-								else:
-									check_if_else(Self.clone_index == 9):
-										Self.📣press_message = Game.📣menu_pressed
-			repeat_forever:
-				check_once_if(User.time - pressed_at > milliseconds_for_single_press and pressed_at == 1 * pressed_at):
-					check_once_if(User.time - repeatedly_pressed_at > repeat_press_interval):
-						repeatedly_pressed_at = User.time
-						broadcast_message(named: Self.📣press_message)
-		When i_get_a_message(join(Self.📣button_pressed, with: Self.clone_index)):
-			pressed_at = User.time
-		When i_get_a_message(join(Self.📣button_unpressed, with: Self.clone_index)):
-			check_if_else(User.time - pressed_at < milliseconds_for_single_press):
-				broadcast_message(named: Self.📣press_message)
-				broadcast_message(named: Game.📣any_controller_button_pressed)
-			pressed_at = "never"
-			repeatedly_pressed_at = 0
