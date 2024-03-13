@@ -7,7 +7,6 @@ custom_block display_text(origin_x: 64, origin_y: 4, text: " [#0D0D0D]Black [#F2
 		custom_block get_text_up_to(regex: "^\]", current: current, remaining: text)
 		Self.color = Self.↩️text_up_to_bracket
 		text = Self.↩️text_after_bracket
-	wait(seconds: 0)
 	set_origin(to_x: origin_x, y: origin_y)
 	create_a_clone_of_this_object
 	check_once_if(Self.bold == 1):
