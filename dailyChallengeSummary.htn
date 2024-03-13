@@ -1,3 +1,37 @@
+Import "helpers/textRendering.htn"
+Import "helpers/animation.htn"
+
 Scene daily_challenge_summary:
-	text temp(text: "Daily challenge summary"):
-		#Placeholder
+	text daily_challenge_summary:
+		When game_starts:
+			check_if_else(Self.clone_index == 0):
+				set_invisibility(percent: 100)
+				Self.color = "#0D0D0D"
+				custom_block display_text(origin_x: 64, origin_y: Game.height - 164, text: "You completed your 𝐁𝐁daily challenge𝐁𝐁! ")
+				broadcast_message(named: Self.name)
+				y = Self.origin_y
+				set_size(percent: 50)
+				Self.color = "#0D0D0D"
+				custom_block display_text(origin_x: 64, origin_y: y - Self.height, text: join("You got 𝐁𝐁", with: join(Game.daily_challenge_stars, with: "/30𝐁𝐁 stars! ")))
+				broadcast_message(named: Self.name)
+				increase(User.total_daily_challenge_stars, by: Game.daily_challenge_stars)
+				increase(User.total_daily_challenge_runs, by: 1)
+				average = User.total_daily_challenge_stars / User.total_daily_challenge_runs
+				Self.color = "#0D0D0D"
+				custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height, text: join("Your average stars are 𝐁𝐁", with: join(average, with: "/30𝐁𝐁 stars! ")))
+				Self.color = "#0D0D0D"
+				check_if_else(Game.daily_challenge_stars == average):
+					custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height, text: "This means you got [green]the same amount of stars [#0D0D0D]as usual! ")
+				else:
+					check_if_else(Game.daily_challenge_stars > average):
+						custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height, text: join("This means you got [green]", with: join(Game.daily_challenge_stars - average, with: "more stars [#0D0D0D]than usual ")))
+					else:
+						custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height, text: join("This means you got [red]", with: join(average - Game.daily_challenge_stars, with: "less stars [#0D0D0D]than usual ")))
+				broadcast_message(named: Self.name)
+				broadcast_message(named: "bb")
+			else:
+				show_popup(message: "some shenanigans are afoot...")
+				destroy
+		When i_get_a_message(Self.name):
+			check_once_if(Self.clone_index > 0 and Self.invisibility_as_a_percent > 0):
+				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 250)

@@ -73,7 +73,10 @@ Scene game:
 			set_invisibility(percent: 100)
 			set_origin(to_x: max(64, Game.width / 2 - 320), y: Game.height * 0.8 - 68 - Self.height)
 		When i_get_a_message(Game.📣Success):
-			check_once_if(Game.daily_challenge_active != "true"):
+			check_if_else(Game.daily_challenge_active == "true"):
+				custom_block compute_stars(width: Game.board_width, height: Game.board_height, taps: Game.total_taps)
+				increase(Game.daily_challenge_stars, by: Self.↩️stars)
+			else:
 				custom_block get_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index)
 				check_once_if (Game.total_taps < Self.↩️taps):
 					custom_block set_taps_for_level(with_size: Game.board_width, at_index: Game.current_level_index, taps: Game.total_taps)

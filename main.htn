@@ -8,22 +8,33 @@ Import "Level select/levelSelect.htn"
 Import "./circleSizeDetection.htn"
 
 Import "helpers/lists.htn"
+Import "helpers/animation.htn"
 
-text data_checker(text: ""):
-	When game_starts:
-		custom_block bring_over_old_user_vars
-		# If there is no user data, create it ASAP
-		check_once_if(User.progress == 0):
-			custom_block create_list(length_length: 1, content_index_length: 5)
-			list = Self.↩️📊created_list
-			repeat(times: 7):
-				custom_block append_to(list: list, new_item: 0)
-				list = Self.↩️📊appended_list
-			User.progress = list
-		custom_block setup_taps_storage_if_needed
-		# To prevent it from getting too big, rebuild user progress whenever I get the time
-		old_list = User.progress
-		custom_block rebuild(list: User.progress)
-		check_once_if(User.progress == old_list):
-			User.progress = Self.↩️📊rebuilt_list
-		destroy
+Scene daily_challenge_summary:
+	text back_button(text: "back"):
+		When game_starts:
+			set_position(to_x: -100000, y: 014)
+		When i_get_a_message("bb"):
+			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness))
+			custom_block ease_position_and_size(from_x: Game.width / 2, to_x: Game.width / 2, from_y: -100, to_y: Self.height, from_size: 200, to_size: 200, milliseconds: 500)
+		When is_tapped(Self):
+			change_scene(to: Scenes.scene_1)
+Scene scene_1:
+	text data_checker(text: ""):
+		When game_starts:
+			custom_block bring_over_old_user_vars
+			# If there is no user data, create it ASAP
+			check_once_if(User.progress == 0):
+				custom_block create_list(length_length: 1, content_index_length: 5)
+				list = Self.↩️📊created_list
+				repeat(times: 7):
+					custom_block append_to(list: list, new_item: 0)
+					list = Self.↩️📊appended_list
+				User.progress = list
+			custom_block setup_taps_storage_if_needed
+			# To prevent it from getting too big, rebuild user progress whenever I get the time
+			old_list = User.progress
+			custom_block rebuild(list: User.progress)
+			check_once_if(User.progress == old_list):
+				User.progress = Self.↩️📊rebuilt_list
+			destroy
