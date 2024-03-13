@@ -151,7 +151,7 @@ Scene game:
 			check_if_else(Self.clone_index == 0):
 				Game.👥rotations = ":"
 			else:
-				Game.👥rotations = join(Game.👥rotations, with: Self.times_tapped)
+				Game.👥rotations = join(Game.👥rotations, with: Self.times_tapped % Self.symmetry)
 		When Self.is_updating_position == "true":
 			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
 		When Self.is_updating_position == "true":
