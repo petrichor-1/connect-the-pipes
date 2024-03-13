@@ -20,6 +20,6 @@ custom_block daily_challenge_level_generation:
 		width = Self.↩️random_number
 		custom_block get_random_number(between: 3, and_max: 9)
 		height = Self.↩️random_number
-		custom_block generate_level(width: width, height: height, seed: Game.daily_challenge_seed + i * 100000000)
+		custom_block generate_level_2d(width: width, height: height, seed: Game.daily_challenge_seed + i * 100000000)
 		custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
 		Game.generated_levels = Self.↩️📊appended_list

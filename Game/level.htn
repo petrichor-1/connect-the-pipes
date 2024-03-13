@@ -35,7 +35,7 @@ Scene game:
 				index_of_level_generation = Game.current_level_index
 				repeat_forever:
 					check_if_else(length(Game.generated_levels) < 1000):
-						custom_block generate_level(width: Game.board_width, height: Game.board_height, seed: index_of_level_generation)
+						custom_block generate_level_2d(width: Game.board_width, height: Game.board_height, seed: index_of_level_generation)
 						custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
 						Game.generated_levels = Self.↩️📊appended_list
 						increase(index_of_level_generation, by: 1)
