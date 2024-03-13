@@ -66,7 +66,7 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 	else:
 		forbidden_connections = join("D", with: forbidden_connections)
 	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
-	custom_block get_random_direction_options(forbidden: all_used_or_forbidden_directions)
+	custom_block get_random_direction_options_2d(forbidden: all_used_or_forbidden_directions)
 	check_once_if(length(Self.↩️random_direction_options) > 1):
 		custom_block get_random_number(between: 0, and_max: length(Self.↩️random_direction_options) - 2)
 		index = Self.↩️random_number
@@ -94,22 +94,22 @@ custom_block get_connection_status_to_2d(direction: "L", x: 0, y: 0, board: "", 
 		else:
 			Self.↩️connection_status = "False"
 
-custom_block get_random_direction_options(forbidden: ""):
+custom_block get_random_direction_options_2d(forbidden: ""):
 	check_if_else(not(forbidden MATCHES "R")):
-		custom_block get_random_direction_options_L(forbidden: forbidden, result: "R:")
+		custom_block get_random_direction_options_2d_L(forbidden: forbidden, result: "R:")
 	else:
-		custom_block get_random_direction_options_L(forbidden: forbidden, result: ":")
-custom_block get_random_direction_options_L(forbidden: "", result: ":"):
+		custom_block get_random_direction_options_2d_L(forbidden: forbidden, result: ":")
+custom_block get_random_direction_options_2d_L(forbidden: "", result: ":"):
 	check_if_else(not(forbidden MATCHES "L")):
-		custom_block get_random_direction_options_U(forbidden: forbidden, result: join("L", with: result))
+		custom_block get_random_direction_options_2d_U(forbidden: forbidden, result: join("L", with: result))
 	else:
-		custom_block get_random_direction_options_U(forbidden: forbidden, result: result)
-custom_block get_random_direction_options_U(forbidden: "", result: ":"):
+		custom_block get_random_direction_options_2d_U(forbidden: forbidden, result: result)
+custom_block get_random_direction_options_2d_U(forbidden: "", result: ":"):
 	check_if_else(not(forbidden MATCHES "U")):
-		custom_block get_random_direction_options_D(forbidden: forbidden, result: join("U", with: result))
+		custom_block get_random_direction_options_2d_D(forbidden: forbidden, result: join("U", with: result))
 	else:
-		custom_block get_random_direction_options_D(forbidden: forbidden, result: result)
-custom_block get_random_direction_options_D(forbidden: "", result: ":"):
+		custom_block get_random_direction_options_2d_D(forbidden: forbidden, result: result)
+custom_block get_random_direction_options_2d_D(forbidden: "", result: ":"):
 	check_if_else(not(forbidden MATCHES "D")):
 		Self.↩️random_direction_options = join("L", with: result)
 	else:
