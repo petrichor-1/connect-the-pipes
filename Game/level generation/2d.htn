@@ -16,7 +16,7 @@ custom_block generate_level_2d(width: 5, height: 5, seed: 0):
 		repeat(times: height):
 			increase(y, by: 1)
 			board = Self.↩️board_with_generated_tile
-			custom_block generate_tile_at(x: x, y: y, board: board, width: width, height: height)
+			custom_block generate_tile_at_2d(x: x, y: y, board: board, width: width, height: height)
 	Self.↩️generated_board = Self.↩️board_with_generated_tile
 
 custom_block create_empty_level_2d(width: 0, height: 0):
@@ -26,7 +26,7 @@ custom_block create_empty_level_2d(width: 0, height: 0):
 			result = join("????", with: result)
 	Self.↩️empty_board = result
 
-custom_block generate_tile_at(x: 0, y: 0, board: "", width: 5, height: 5):
+custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 	connections = ":"
 	forbidden_connections = ":"
 	check_if_else (x < width - 1):
