@@ -71,6 +71,8 @@ text daily_challenge_play_button(text: "Play", resize_scale: 2):
 	When is_tapped(Self):
 		Game.daily_challenge_active = "true"
 		Game.current_level_index = 1
+		User.last_daily_challenge_started_at = User.time
+		User.last_daily_challenge_day = User.day
 		broadcast_message(named: Game.📣play_level)
 
 text daily_challenge_back_button(text: "No, thanks", resize_scale: 1.5):

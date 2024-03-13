@@ -32,7 +32,13 @@ text level_names(text: "4x4"):
 			Self.amount_til_unlocked = 50 - Self.↩️📊list_item
 		check_if_else(Self.clone_index == 6):
 			custom_block get_probable_date_format
-			set_text(to: join("Daily challenge ", with: Self.↩️formatted_date), color: h(my_hue, s: my_saturation, b: my_brightness))
+			check_if_else(User.time - User.last_daily_challenge_started_at < 24 * 3600 * 1000 and User.day == User.last_daily_challenge_day):
+				Self.amount_til_unlocked = "many"
+				set_text(to: join("Daily challenge ", with: join(Self.↩️formatted_date, with: join(" – ", with: join(User.latest_daily_challenge_stars, with: " stars")))), color: h(my_hue, s: 5, b: 5))
+				set_size(percent: 50)
+			else:
+				set_text(to: join("Daily challenge ", with: Self.↩️formatted_date), color: h(my_hue, s: my_saturation, b: my_brightness))
+				set_size(percent: 100)
 		else:
 			check_if_else(Self.amount_til_unlocked > 0):
 				set_text(to: join("Locked! (Complete ", with: join(Self.amount_til_unlocked, with: join(" more ", with: join(Self.clone_index + 3, with: join("x", with: join(Self.clone_index + 3, with: " levels)")))))), color: h(my_hue, s: 5, b: 5))
@@ -49,7 +55,7 @@ text level_names(text: "4x4"):
 		check_once_if(absolute_value(Game.last_touch_y - Self.y_position) < (Game.height - 128) / Self.total_clones / 2 and absolute_value(Self.x_position - Game.width / 2) < 10):
 			broadcast_message(named: join(Game.📣tap_level_section_with_index, with: Self.clone_index))
 	When i_get_a_message(join(Game.📣tap_level_section_with_index, with: Self.clone_index)):
-		check_if_else(Self.clone_index == 6):
+		check_if_else(Self.clone_index == 6 and Self.amount_til_unlocked != "many"):
 			Game.👆y_position = Self.y_position
 			Game.👆height = (Game.height - 128) / Self.total_clones
 			broadcast_message(named: Game.📣👆draw)

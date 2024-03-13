@@ -16,6 +16,7 @@ Scene daily_challenge_summary:
 				broadcast_message(named: Self.name)
 				increase(User.total_daily_challenge_stars, by: Game.daily_challenge_stars)
 				increase(User.total_daily_challenge_runs, by: 1)
+				User.latest_daily_challenge_stars = Game.daily_challenge_stars
 				average = User.total_daily_challenge_stars / User.total_daily_challenge_runs
 				Self.color = "#0D0D0D"
 				custom_block display_text(origin_x: 64, origin_y: Self.origin_y - Self.height, text: join("Your average stars are 𝐁𝐁", with: join(average, with: "/30𝐁𝐁 stars! ")))
