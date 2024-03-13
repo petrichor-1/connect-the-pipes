@@ -58,6 +58,7 @@ text daily_challenge:
 			destroy
 
 text daily_challenge_play_button(text: "Play", resize_scale: 2):
+	Game.📣enter_daily_challenge = "Enter daily cahllenge"
 	When game_starts:
 		set_position(to_x: 014, y: -1000000)
 	When i_get_a_message(Game.📣show_daily_challenge_buttons):
@@ -69,6 +70,8 @@ text daily_challenge_play_button(text: "Play", resize_scale: 2):
 		Game.daily_challenge_active = "false"
 		custom_block ease_position_and_size(from_x: Self.x_position, to_x: Self.x_position + Game.width, from_y: Self.y_position, to_y: Self.y_position - Game.width, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When is_tapped(Self):
+		broadcast_message(named: Game.📣enter_daily_challenge)
+	When i_get_a_message(Game.📣enter_daily_challenge):
 		Game.daily_challenge_active = "true"
 		Game.current_level_index = 1
 		User.last_daily_challenge_started_at = User.time
