@@ -5,6 +5,10 @@ Scene Game:
 	text low_level_controller_support_level:
 		custom_rule low_level_controller_support
 
+Scene daily_challenge_summary:
+	text low_level_controller_support_daily_challenge_summary:
+		custom_rule low_level_controller_support
+
 text low_level_controller_support_level_select:
 	custom_rule low_level_controller_support
 custom_rule low_level_controller_support:

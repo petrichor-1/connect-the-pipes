@@ -1,5 +1,6 @@
 Import "helpers/textRendering.htn"
 Import "helpers/animation.htn"
+Import "controller support/pipes.htn"
 
 Scene daily_challenge_summary:
 	text daily_challenge_summary:
@@ -36,3 +37,6 @@ Scene daily_challenge_summary:
 		When i_get_a_message(Self.name):
 			check_once_if(Self.clone_index > 0 and Self.invisibility_as_a_percent > 0):
 				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 250)
+		When i_get_a_message(Game.📣b_pressed):
+			check_once_if(Self.clone_index == 0):
+				broadcast_message(named: "bb b")
