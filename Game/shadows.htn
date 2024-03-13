@@ -37,6 +37,7 @@ Scene game:
 			aspect_ratio = Self.height / Self.width
 			set_width(Self.tile_size * Self.📺width_multiplier, height: aspect_ratio * Self.tile_size * Self.📺height_multiplier)
 			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness * 0.9 + 0.1 * 5))
+			Self.times_tapped = random(1, to: 3)
 			set_position(to_x: -4 + Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation),
 						    y: -4 + Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation)
 			)
