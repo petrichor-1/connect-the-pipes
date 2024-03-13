@@ -6,7 +6,7 @@ custom_block generate_level_2d(width: 5, height: 5, seed: 0):
 		increase(seed, by: 10000)
 	Self.random_seed = seed
 	check_once_if(height * width + 1 != length(Self.↩️empty_board)):
-		custom_block create_empty_level(width: width, height: height)
+		custom_block create_empty_level_2d(width: width, height: height)
 	board = Self.↩️empty_board
 	Self.↩️board_with_generated_tile = board
 	x = -1
@@ -19,7 +19,7 @@ custom_block generate_level_2d(width: 5, height: 5, seed: 0):
 			custom_block generate_tile_at(x: x, y: y, board: board, width: width, height: height)
 	Self.↩️generated_board = Self.↩️board_with_generated_tile
 
-custom_block create_empty_level(width: 0, height: 0):
+custom_block create_empty_level_2d(width: 0, height: 0):
 	result = ":"
 	repeat(times: width):
 		repeat(times: height):
