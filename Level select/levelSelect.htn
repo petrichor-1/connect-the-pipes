@@ -84,6 +84,7 @@ text level_names(text: "4x4"):
 text level_section_lines(text: ""):
 	When i_get_a_message(Game.📣display_level_section_selector):
 		check_if_else(Self.clone_index == 0):
+			wait(seconds: 0)
 			create_clones_of_this_object(times: level_names.total_clones)
 		else:
 			destroy
@@ -100,6 +101,7 @@ text level_section_lines(text: ""):
 text level_section_progress(text: ""):
 	When i_get_a_message(Game.📣display_level_section_selector):
 		check_if_else(Self.clone_index == 0):
+			wait(seconds: 0)
 			create_clones_of_this_object(times: level_names.total_clones)
 		else:
 			destroy
@@ -110,6 +112,8 @@ text level_section_progress(text: ""):
 				custom_block wait_for_user_data
 		custom_block get_item_in(list: User.progress, at_index: (Self.clone_index - 1) % level_names.total_clones)
 		progress = Self.↩️📊list_item
+		check_once_if((Self.clone_index - 1) % level_names.total_clones == 6):
+			progress = random(0, to: 1000)
 		my_y = Game.height - 96 - (Self.clone_index - 1) % level_names.total_clones * (Game.height - 128) / level_names.total_clones
 		my_hue = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 3)
 		my_saturation = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 3, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 6)
