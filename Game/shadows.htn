@@ -31,7 +31,7 @@ Scene game:
 			Self.y = Self.↩️y
 			Self.origin_position_x = Self.↩️origin_position_x
 			Self.origin_position_y = Self.↩️origin_position_y
-			custom_block get_tile_at(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
+			custom_block get_tile_at_2d(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
 			custom_block set_image_for(tile: Self.↩️tile)
 			send_to_back
 			aspect_ratio = Self.height / Self.width

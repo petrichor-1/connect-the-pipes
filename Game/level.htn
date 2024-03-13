@@ -116,7 +116,7 @@ Scene game:
 			Self.📣connect_to_main_tile = join(Game.📣connect_to_main_tile_at, with: join(Self.x, with: join(",", with: Self.y)))
 			Self.origin_position_x = Self.↩️origin_position_x
 			Self.origin_position_y = Self.↩️origin_position_y
-			custom_block get_tile_at(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
+			custom_block get_tile_at_2d(x: Self.x, y: Self.y, board: Self.board, width: Game.board_width)
 			Self.tile = Self.↩️tile
 			custom_block set_image_for(tile: Self.↩️tile)
 			# set_text(to: Self.↩️tile, color: h(0,s:0,b:0))
@@ -339,7 +339,7 @@ Scene game:
 			Self.y = Self.↩️y
 			Self.origin_position_x = Self.↩️origin_position_x
 			Self.origin_position_y = Self.↩️origin_position_y
-			custom_block get_tile_at(x: Self.x, y: Self.y, board: Game.main_tile_board, width: Game.board_width)
+			custom_block get_tile_at_2d(x: Self.x, y: Self.y, board: Game.main_tile_board, width: Game.board_width)
 			custom_block set_image_for(tile: Self.↩️tile)
 		When object_is_cloned:
 			# Wait a frame because for some reason there is a frame delay after the first block of Get Position Of Tile. :/

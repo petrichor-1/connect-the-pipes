@@ -79,7 +79,7 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 	index = (y * width + x) * 4
 	Self.↩️board_with_generated_tile = join(characters_between(in: board, between: 0, and: index), with: join(generated_tile, with: characters_between(in: board, between: index + 4, and: length(board))))
 
-custom_block get_tile_at(x: 0, y: 0, board: "", width: 0):
+custom_block get_tile_at_2d(x: 0, y: 0, board: "", width: 0):
 	index = (y * width + x) * 4
 	Self.↩️tile = characters_between(in: board, between: index, and: index + 4)
 
