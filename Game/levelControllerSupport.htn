@@ -8,12 +8,17 @@ Scene game:
 		Game.📣🕹️rotate_counterclockwise = "Rotate controller counterclockwise"
 		Game.📣🕹️rotate_clockwise = "Rotate controller clockwise"
 		previous_index = 0
-		When game_starts:
+		known_width = -1
+		known_height = -1
+		When known_width != Game.board_width or known_height != Game.board_height:
+			known_height = Game.board_height
+			known_width = Game.board_width
 			Self.index = 0
 			set_position(to_x: -100000, y: -1000000)
-			set_color(h(Game.primary_color_hue, s: 5, b: Game.primary_color_brightness))
+			set_color(h(35, s: 5, b: 90))
 			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
 			set_width(Self.tile_size, height: Self.tile_size)
+			set_invisibility(percent: 10)
 		When i_get_a_message(Game.📣dpad_left_pressed):
 			check_once_if(Game.is_win_screen_showing != "true"):
 				check_if_else(Self.index % Game.board_width > 0):
