@@ -1,4 +1,5 @@
 Import "./level generation/2d.htn"
+Import "../helpers/rng.htn"
 Import "../helpers/lists.htn"
 
 Scene game:

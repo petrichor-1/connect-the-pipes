@@ -2,7 +2,7 @@ Import "advanced.htn"
 Import "../helpers/dateFormats.htn"
 Import "../helpers/textRendering.htn"
 Import "../helpers/animation.htn"
-Import "../Game/level generation/2d.htn"
+Import "../helpers/rng.htn"
 
 text daily_challenge:
 	Game.📣display_daily_challenge = "display daily challenge"
