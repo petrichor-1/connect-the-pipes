@@ -2,7 +2,7 @@ Import "secretblocks.htn"
 Import "../helpers/animation.htn"
 Import "./tilePosition.htn"
 Import "./displayTiles.htn"
-Import "./levelGeneratorBlocks.htn"
+Import "./level generation/2d.htn"
 
 Scene game:
 	text shadows(text:""):

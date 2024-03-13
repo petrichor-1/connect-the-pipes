@@ -1,4 +1,4 @@
-Import "./levelGeneratorBlocks.htn"
+Import "./level generation/2d.htn"
 Import "../helpers/lists.htn"
 
 Scene game:
