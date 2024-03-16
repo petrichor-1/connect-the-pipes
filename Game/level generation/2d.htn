@@ -67,6 +67,7 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 		forbidden_connections = join("D", with: forbidden_connections)
 	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
 	custom_block get_random_direction_options_2d(forbidden: all_used_or_forbidden_directions)
+	custom_block shuffle_random_direction_options_2d
 	check_once_if(length(Self.↩️random_direction_options) > 1):
 		custom_block get_random_number(between: 0, and_max: length(Self.↩️random_direction_options) - 2)
 		index = Self.↩️random_number
@@ -114,3 +115,15 @@ custom_block get_random_direction_options_2d_D(forbidden: "", result: ":"):
 		Self.↩️random_direction_options = join("L", with: result)
 	else:
 		Self.↩️random_direction_options = result
+
+custom_block shuffle_random_direction_options_2d:
+	index = -1
+	result = ":"
+	repeat(times: length(Self.↩️random_direction_options) - 1):
+		increase(index, by: 1)
+		custom_block get_random_number(between: 0, and_max: length(result) - 1)
+		check_if_else(Self.↩️random_number == 0):
+			result = join(character_at_index(in: Self.↩️random_direction_options, at: index), with: result)
+		else:
+			result = join(characters_between(in: result, between: 0, and: Self.↩️random_number), with: join(character_at_index(in: Self.↩️random_direction_options, at: index), with: characters_between(in: result, between: Self.↩️random_number, and: length(result))))
+	Self.↩️random_direction_options = result
