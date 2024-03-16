@@ -9,14 +9,22 @@ custom_block generate_level_2d(width: 5, height: 5, seed: 0):
 		custom_block create_empty_level_2d(width: width, height: height)
 	board = Self.↩️empty_board
 	Self.↩️board_with_generated_tile = board
-	x = -1
-	repeat(times: width):
-		y = -1
-		increase(x, by: 1)
-		repeat(times: height):
-			increase(y, by: 1)
-			board = Self.↩️board_with_generated_tile
-			custom_block generate_tile_at_2d(x: x, y: y, board: board, width: width, height: height)
+	custom_block get_random_number(between: 0, and_max: width - 1)
+	# Assume at most 9x9 and at least 0x0 size
+	queue = join(":", with: Self.↩️random_number)
+	custom_block get_random_number(between: 0, and_max: height - 1)
+	queue = join(queue, with: Self.↩️random_number)
+	index = -1
+	Self.↩️disconnected_neighbors = join(queue, with: ":")
+	queue = ":"
+	repeat(times: width * height):
+		increase(index, by: 1)
+		board = Self.↩️board_with_generated_tile
+		queue = join(queue, with: characters_between(in: Self.↩️disconnected_neighbors, between: 1, and: 1e100))
+		x = characters_between(in: queue, between: 1 + index * 3, and: 2 + index * 3)
+		y = characters_between(in: queue, between: 2 + index * 3, and: 3 + index * 3)
+		# show_popup(message: join(x, with: join(", ", with: join(y, with: join(" at ", with: join(index, with: join(" in ", with: queue)))))))
+		custom_block generate_tile_at_2d(x: x, y: y, board: board, width: width, height: height, next_tiles_queue: queue)
 	Self.↩️generated_board = Self.↩️board_with_generated_tile
 
 custom_block create_empty_level_2d(width: 0, height: 0):
@@ -26,7 +34,9 @@ custom_block create_empty_level_2d(width: 0, height: 0):
 			result = join("????", with: result)
 	Self.↩️empty_board = result
 
-custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
+custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5, next_tiles_queue: ":01:23:"):
+	check_once_if(characters_between(in: board, between: (y * width + x) * 4, and: (y * width + x) * 4 + 4) != "????"):
+		show_popup(message: join("DUP!", with: join(x, with: join(",", with: y))))
 	connections = ":"
 	forbidden_connections = ":"
 	check_if_else (x < width - 1):
@@ -66,6 +76,7 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 	else:
 		forbidden_connections = join("D", with: forbidden_connections)
 	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
+	# show_popup(message: all_used_or_forbidden_directions)
 	custom_block get_random_direction_options_2d(forbidden: all_used_or_forbidden_directions)
 	custom_block shuffle_random_direction_options_2d
 	check_once_if(length(Self.↩️random_direction_options) > 1):
@@ -77,8 +88,41 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 			increase(index, by: 1)
 	connections = join(characters_between(in: 10 ^ subtract(5, length(connections)), between: 1, and: 100), with: connections)
 	generated_tile = characters_between(in: connections, between: 0, and: 4)
+	disconnected_neighbors = ":"
+	nx = x
+	ny = y + 1
+	next = ":"
+	next = join(next, with: nx)
+	next = join(next, with: ny)
+	check_once_if(Self.↩️random_direction_options MATCHES "U" and y < height - 1 and not(next_tiles_queue MATCHES next)):
+		# Assume at most 9x9 and at least 0x0 size
+		disconnected_neighbors = join(disconnected_neighbors, with: next)
+	ny = y - 1
+	next = ":"
+	next = join(next, with: nx)
+	next = join(next, with: ny)
+	check_once_if(Self.↩️random_direction_options MATCHES "D" and y > 0 and not(next_tiles_queue MATCHES next)):
+		# Assume at most 9x9 and at least 0x0 size
+		disconnected_neighbors = join(disconnected_neighbors, with: next)
+	nx = x + 1
+	ny = y
+	next = ":"
+	next = join(next, with: nx)
+	next = join(next, with: ny)
+	check_once_if(Self.↩️random_direction_options MATCHES "R" and x < width - 1 and not(next_tiles_queue MATCHES next)):
+		# Assume at most 9x9 and at least 0x0 size
+		disconnected_neighbors = join(disconnected_neighbors, with: next)
+	nx = x - 1
+	next = ":"
+	next = join(next, with: nx)
+	next = join(next, with: ny)
+	check_once_if(Self.↩️random_direction_options MATCHES "L" and width > 0 and not(next_tiles_queue MATCHES next)):
+		# Assume at most 9x9 and at least 0x0 size
+		disconnected_neighbors = join(disconnected_neighbors, with: next)
+	# show_popup(message: join(Self.↩️random_direction_options, with: join(" ", with: disconnected_neighbors)))
 	index = (y * width + x) * 4
 	Self.↩️board_with_generated_tile = join(characters_between(in: board, between: 0, and: index), with: join(generated_tile, with: characters_between(in: board, between: index + 4, and: length(board))))
+	Self.↩️disconnected_neighbors = join(characters_between(in: disconnected_neighbors, between: 1, and: 1e100), with: ":")
 
 custom_block get_tile_at_2d(x: 0, y: 0, board: "", width: 0):
 	index = (y * width + x) * 4
@@ -112,7 +156,7 @@ custom_block get_random_direction_options_2d_U(forbidden: "", result: ":"):
 		custom_block get_random_direction_options_2d_D(forbidden: forbidden, result: result)
 custom_block get_random_direction_options_2d_D(forbidden: "", result: ":"):
 	check_if_else(not(forbidden MATCHES "D")):
-		Self.↩️random_direction_options = join("L", with: result)
+		Self.↩️random_direction_options = join("D", with: result)
 	else:
 		Self.↩️random_direction_options = result
 
