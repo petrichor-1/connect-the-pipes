@@ -167,15 +167,18 @@ Scene game:
 					custom_block rotate_self(amount: 1):
 						increase(Self.times_tapped, by: amount)
 						increase(Game.total_taps, by: amount)
-						# Music taps so that the notes don't give away the solution
-						increase(Self.music_taps, by: 1)
-						play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
-						check_once_if(Game.shadows_disabled != "true"):
-							broadcast_message(named: Game.📣👥update_shadow)
-						broadcast_message(named: Self.📣check_board)
-						custom_block update_main_tile
-						check_once_if(Game.board_complete == "true"):
-							broadcast_message(named: Game.📣Success)
+						increase(Self.unresolved_rotations, by: 1)
+		When Self.unresolved_rotations > 0:
+			increase(Self.unresolved_rotations, by: -1)
+			# Music taps so that the notes don't give away the solution
+			increase(Self.music_taps, by: 1)
+			play_note((59 + Self.symmetry) + Self.music_taps % Self.symmetry, rhythm: 0)
+			check_once_if(Game.shadows_disabled != "true"):
+				broadcast_message(named: Game.📣👥update_shadow)
+			broadcast_message(named: Self.📣check_board)
+			custom_block update_main_tile
+			check_once_if(Game.board_complete == "true"):
+				broadcast_message(named: Game.📣Success)
 		When i_get_a_message(Self.📣check_board):
 			check_if_else(Self.clone_index == 0):
 				Game.board_complete = "true"
