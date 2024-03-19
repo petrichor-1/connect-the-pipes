@@ -3,7 +3,7 @@ Import "advanced.htn"
 custom_block get_probable_date_format:
 	custom_block get_date_and_time_UTC
 	# This will be wrong on the start and end of each month
-	relative_hour_UTC = Self.↩️day_UTC - User.day + Self.↩️hour_UTC
+	relative_hour_UTC = multiply(Self.↩️day_UTC - User.day, *: 24) + Self.↩️hour_UTC
 	time_zone = User.hour - relative_hour_UTC
 	# Assume everyone in the americas uses m/d/y, and everyone else uses d/m/y
 	# Neither of those assumptions are correct
