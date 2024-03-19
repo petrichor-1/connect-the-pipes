@@ -17,12 +17,16 @@ custom_block ease_color(from_h: 0, to_h: 0, from_s: 0, to_s: 0, from_b: 0, to_b:
 
 custom_block ease_invisibility_sine(from: 0, offset: 0, start_time: 0, duration_ms: 1000):
 	progress = min(1, (User.time - start_time) / duration_ms)
+	# Because division by 0 == 0, this is necessary (will assing 1 to progress if duration_ms is <= 0):
+	progress = max(duration_ms <= 0, progress)
 	set_invisibility(percent: progress * offset + from)
 	check_once_if(progress < 1):
 		custom_block ease_invisibility_sine(from: from, offset: offset, start_time: start_time, duration_ms: duration_ms)
 
 custom_block ease_position_and_size_quint(from_x: 0, offset_x: 0, from_y: 0, offset_y: 0, from_size: 0, offset_size: 0, start_time: 0, duration_ms: 0):
 	progress = min(1, (User.time - start_time) / duration_ms)
+	# Because division by 0 == 0, this is necessary (will assing 1 to progress if duration_ms is <= 0):
+	progress = max(duration_ms <= 0, progress)
 	# Ew, conditional multiplication
 	t = (progress < 0.5) * (16 * progress ^ 5) + not(progress < 0.5) * subtract(1, (-2 * progress + 2) ^ 5 / 2)
 	set_position(to_x: t * offset_x + from_x, y: t * offset_y + from_y)
@@ -32,6 +36,8 @@ custom_block ease_position_and_size_quint(from_x: 0, offset_x: 0, from_y: 0, off
 
 custom_block ease_self_displayed_rotation_quint(from: 0, offset: 0, start_time: 0, duration_ms: 0):
 	progress = min(1, (User.time - start_time) / duration_ms)
+	# Because division by 0 == 0, this is necessary (will assing 1 to progress if duration_ms is <= 0):
+	progress = max(duration_ms <= 0, progress)
 	# Ew, conditional multiplication
 	t = (progress < 0.5) * (16 * progress ^ 5) + not(progress < 0.5) * subtract(1, (-2 * progress + 2) ^ 5 / 2)
 	Self.displayed_rotation = from + t * offset
@@ -40,6 +46,8 @@ custom_block ease_self_displayed_rotation_quint(from: 0, offset: 0, start_time: 
 
 custom_block ease_color_sine(from_h: 0, offset_h: 0, from_s: 0, offset_s: 0, from_b: 0, offset_b: 0, start_time: 0, duration_ms: 0):
 	progress = min(1, (User.time - start_time) / duration_ms)
+	# Because division by 0 == 0, this is necessary (will assing 1 to progress if duration_ms is <= 0):
+	progress = max(duration_ms <= 0, progress)
 	set_color(h(from_h + offset_h * progress, s: from_s + offset_s * progress, b: from_b + offset_b * progress))
 	check_once_if(progress < 1):
 		custom_block ease_color_sine(from_h: from_h, offset_h: offset_h, from_s: from_s, offset_s: offset_s, from_b: from_b, offset_b: offset_b, start_time: start_time, duration_ms: duration_ms)

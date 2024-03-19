@@ -125,13 +125,13 @@ Scene game:
 			set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation, b: Game.primary_color_brightness + 50))
 			check_if_else(stars > Self.clone_index):
 				start_sound("dash", wait: 0)
-				custom_block ease_position_and_size(from_x: Game.width / 2, to_x: final_x, from_y: Game.height / 2, to_y: final_y, from_size: 0, to_size: final_size, milliseconds: 500)
+				custom_block ease_position_and_size(from_x: Game.width / 2, to_x: final_x, from_y: Game.height / 2, to_y: final_y, from_size: 0, to_size: final_size, milliseconds: 500 * Game.win_screen_animation_skipped)
 			else:
 				set_invisibility(percent: 100)
 				set_position(to_x: final_x, y: final_y)
 				set_size(percent: final_size * 0.9)
 				set_color(h(Game.primary_color_hue, s: Game.primary_color_saturation / 2, b: Game.primary_color_brightness))
-				custom_block ease_invisibility(from: 100, to: 10, milliseconds: 500)
+				custom_block ease_invisibility(from: 100, to: 10, milliseconds: 500 * Game.win_screen_animation_skipped)
 	
 	triangle next_level_button:
 		custom_rule hide_on_play
@@ -153,7 +153,7 @@ Scene game:
 		When i_get_a_message(Game.📣show_win_buttons):
 			bring_to_front
 			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
-			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250 * Game.win_screen_animation_skipped)
 		When is_tapped(Self):
 			check_if_else(Game.current_level_index >= 1000):
 				broadcast_message(named: Game.📣back_to_level_select)
@@ -188,7 +188,7 @@ Scene game:
 			check_once_if(Game.daily_challenge_active != "true"):
 				bring_to_front
 				# Just the last clone will be 99% invisible. This lets it be tapped but not seen
-				custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+				custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250 * Game.win_screen_animation_skipped)
 		When is_tapped(Self):
 			check_once_if(Game.daily_challenge_active != "true"):
 				broadcast_message(named: Game.📣play)
@@ -213,6 +213,6 @@ Scene game:
 		When i_get_a_message(Game.📣show_win_buttons):
 			bring_to_front
 			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
-			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250)
+			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250 * Game.win_screen_animation_skipped)
 		When is_tapped(Self):
 			broadcast_message(named: Game.📣back_to_level_select)
