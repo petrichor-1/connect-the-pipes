@@ -93,10 +93,10 @@ Scene game:
 				Game.main_tile_index = Self.↩️random_number - 1
 				Game.main_tile_board = Self.board
 				broadcast_message(named: Game.📣spawn_main_tile_marker)
+				repeat(times: 6):
+					wait(seconds: 0)
 				custom_block update_main_tile:
 					broadcast_message(named: Game.📣update_main_tile)
-				repeat(times: 2):
-					wait(seconds: 0)
 				check_once_if(Game.shadows_disabled != "true"):
 					broadcast_message(named: Game.📣👥update_shadow)
 			else:

@@ -42,7 +42,6 @@ Scene game:
 						    y: -4 + Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation)
 			)
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
-			custom_block ease_invisibility(from: 100, to: 0, milliseconds: 100)
 			repeat_forever:
 				check_once_if(Self.displayed_rotation != Self.times_tapped * 90):
 					Self.is_updating_position = "true"
@@ -63,3 +62,7 @@ Scene game:
 		When i_get_a_message(Game.📣👥update_shadow):
 			wait(seconds: 0)
 			Self.times_tapped = 1 * character_at_index(in: Game.👥rotations, at: 1 + Self.index)
+		When i_get_a_message(Game.📣👥update_shadow):
+			check_once_if(Self.invisibility_as_a_percent == 100):
+				wait(seconds: 0)
+				custom_block ease_invisibility(from: 100, to: 0, milliseconds: 100)
