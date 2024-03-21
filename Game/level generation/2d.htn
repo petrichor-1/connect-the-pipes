@@ -1,23 +1,124 @@
 Import "../../helpers/rng.htn"
 
 custom_block generate_level_2d(width: 5, height: 5, seed: 0):
-	check_if_else("^(12|38|168|13|40)$" MATCHES seed):
-		# Multiple solutions
-		increase(seed, by: 10000)
 	Self.random_seed = seed
 	check_once_if(height * width + 1 != length(Self.↩️empty_board)):
 		custom_block create_empty_level_2d(width: width, height: height)
 	board = Self.↩️empty_board
-	Self.↩️board_with_generated_tile = board
-	x = -1
-	repeat(times: width):
-		y = -1
-		increase(x, by: 1)
-		repeat(times: height):
-			increase(y, by: 1)
-			board = Self.↩️board_with_generated_tile
+	# Create the queue of tiles to be generated
+	# This is the format of `:<tilex(1 digit)><tiley(1 digit)>`.
+	# This assumes a maximum width and height of 9, and a minimum of 0.
+	check_once_if(width > 9 or width < 0 or height > 9 or height < 0):
+		show_popup(message: join("Invalid dimensions of ", with: join(width, with: join("x", with: join(height, with: ", maximum is 9x9, minimum is 0x0. Level generation is permanently paused until recreation")))))
+		repeat_forever:
+			wait(seconds: 0)
+	queue = ":"
+	# Select the first tile
+	custom_block get_random_number(between: 0, and_max: width - 1)
+	# X
+	queue = join(queue, with: Self.↩️random_number)
+	custom_block get_random_number(between: 0, and_max: height - 1)
+	# Y
+	queue = join(queue, with: Self.↩️random_number)
+	index = 0
+	custom_block board_generation_2d_queue_search_loop(width: width, height: height, board: board, queue: queue, q_index: index)
+custom_block board_generation_2d_queue_search_loop(width: 0, height: 0, board: 0, queue: 0, q_index: 0):
+	check_if_else(not(board MATCHES "????")):
+		show_popup(message: join("LEvel generation finished! Board: ", with: board))
+		Self.↩️generated_board = board
+	else:
+		check_once_if(length(queue) < q_index * 3 + 3):
+			# show_popup(message: join("q_index * 3 is ", with: join(q_index * 3, with: join(" but length(queue) is only ", with: length(queue)))))
+			#This means that the queue does not have a next tile in it! This means that a complete graph has been made, and we must select an ungenerated tile and force a connection to it.
+			custom_block find_first_ungenerated_location_next_to_defined_location_in(board: board, width: width, height: height)
+			x = Self.↩️ungenerated_x
+			y = Self.↩️ungenerated_y
+			index = y * width + x
+			# show_popup(message: join("Undefined tile is ", with: join(characters_between(in: board, between: index * 4, and: index * 4 + 4), with: join(" and it should ALWAYS be ", with: "????"))))
+			check_if_else(x > 0 and characters_between(in: board, between: index * 4 - 4, and: index * 4) != "????"):
+				custom_block force_connection(board: board, at_index: index - 1, to: "R")
+				board = Self.↩️board_with_forced_connection
+			else:
+				check_if_else(x < width - 1 and characters_between(in: board, between: index * 4 + 4, and: index * 4 + 8) != "????"):
+					custom_block force_connection(board: board, at_index: index + 1, to: "L")
+					board = Self.↩️board_with_forced_connection
+				else:
+					check_if_else(y < height - 1 and characters_between(in: board, between: index * 4 + width * 4, and: index * 4 +  width * 4 + 4) != "????"):
+						custom_block force_connection(board: board, at_index: index + width, to: "D")
+						board = Self.↩️board_with_forced_connection
+					else:
+						check_if_else(y > 0 and characters_between(in: board, between: index * 4 - width * 4, and: index * 4 - width * 4 + 4) != "????"):
+							custom_block force_connection(board: board, at_index: index - width, to: "U")
+							board = Self.↩️board_with_forced_connection
+			#Add ungenerated tile to queue
+			# show_popup(message: join("Replacing queue ", with: join(queue, with: join(" with ", with: join(queue, with: join(":", with: join(x, with: y)))))))
+			queue = join(queue, with: join(":", with: join(x, with: y)))
+		# show_popup(message: join("Taking from queue: ", with: queue))
+		x = characters_between(in: queue, between: q_index * 3 + 1, and: q_index * 3 + 2)
+		y = characters_between(in: queue, between: q_index * 3 + 2, and: q_index * 3 + 3)
+		index = y * width + x
+		tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+		# show_popup(message: join("Tile staring at index ", with: join(index, with: join(" is ", with: join(tile, with: join(" in board: ", with: board))))))
+		check_once_if(tile == "????"):
 			custom_block generate_tile_at_2d(x: x, y: y, board: board, width: width, height: height)
-	Self.↩️generated_board = Self.↩️board_with_generated_tile
+			# show_popup(message: join("Updating board from ", with: join(board, with: join(" to ", with: Self.↩️board_with_generated_tile))))
+			board = Self.↩️board_with_generated_tile
+			check_once_if(Self.↩️add_to_ungenerated_tiles_queue != 0):
+				queue = join(queue, with: Self.↩️add_to_ungenerated_tiles_queue)
+		# show_popup(message: join("The board going into a recursive call is ", with: board))
+		custom_block board_generation_2d_queue_search_loop(width: width, height: height, board: board, queue: queue, q_index: q_index + 1)
+
+custom_block force_connection(board: "board", at_index: 1, to: "R"):
+	# Technically this may overwrite already forced connections, but that is very unlikely.
+	tile = join("R", with: characters_between(in: board, between: at_index * 4 + 1, and: at_index * 4 + 4))
+	Self.↩️board_with_forced_connection = join(characters_between(in: board, between: 0, and: at_index * 4), with: join(tile, with: characters_between(in: board, between: at_index * 4 + 4, and: length(board))))
+
+custom_block find_first_ungenerated_location_next_to_defined_location_in(board: 0, width: 0, height: 0):
+	result_x = "Unknown"
+	result_y = "Unknown"
+	x = 0
+	repeat(times: width):
+		check_once_if(result_x == "Unknown"):
+			y = 0
+			repeat(times: height):
+				check_once_if(result_x == "Unknown"):
+					index = y * width + x
+					tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+					check_once_if(tile == "????"):
+						check_once_if(x > 0):
+							index = y * width + x - 1
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							check_once_if(not(tile == "????")):
+								result_x = x
+								result_y = y
+						check_once_if(result_x == "Unknown" and x < width - 1):
+							index = y * width + x + 1
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							check_once_if(not(tile == "????")):
+								result_x = x
+								result_y = y
+						check_once_if(result_x == "Unknown" and y < height - 1):
+							index = y * width + x + width
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							check_once_if(not(tile == "????")):
+								result_x = x
+								result_y = y
+						check_once_if(result_x == "Unknown" and y > 0):
+							index = y * width + x - width
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							check_once_if(not(tile == "????")):
+								result_x = x
+								result_y = y
+					increase(y, by: 1)
+			increase(x, by: 1)
+	check_if_else(result_x == "Unknown"):
+		show_popup(message: "Did not find ungenerated tile. Level generation permanently paused until recreated")
+		show_popup(message: board)
+		repeat_forever:
+			wait(seconds: 0)
+	else:
+		Self.↩️ungenerated_x = result_x
+		Self.↩️ungenerated_y = result_y
 
 custom_block create_empty_level_2d(width: 0, height: 0):
 	result = ":"
@@ -27,8 +128,10 @@ custom_block create_empty_level_2d(width: 0, height: 0):
 	Self.↩️empty_board = result
 
 custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
+	# show_popup(message: join("Generating tile at ", with: join(x, with: join(",", with: y))))
 	connections = ":"
 	forbidden_connections = ":"
+	non_required_connections = ":"
 	check_if_else (x < width - 1):
 		custom_block get_connection_status_to_2d(direction: "L", x: x + 1, y: y, board: board, width: width)
 		check_if_else(Self.↩️connection_status == "True"):
@@ -72,13 +175,189 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 		custom_block get_random_number(between: 0, and_max: length(Self.↩️random_direction_options) - 2)
 		index = Self.↩️random_number
 		custom_block get_random_number(between: 1, and_max: length(Self.↩️random_direction_options) - 1 - index)
-		repeat(times: Self.↩️random_number):
-			connections = join(character_at_index(in: Self.↩️random_direction_options, at: index), with: connections)
-			increase(index, by: 1)
+		custom_block check_if_this_will_lead_to_duplicate_solutions(board: board, x: x, y: y, width: width, height: height, connections: connections, random_direction_options: Self.↩️random_direction_options, index: index, amount: amount)
+		check_once_if(Self.↩️will_probably_lead_to_duplicate_solutions != "true"):
+			repeat(times: Self.↩️random_number):
+				connection = character_at_index(in: Self.↩️random_direction_options, at: index)
+				connections = join(connection, with: connections)
+				non_required_connections = join(connection, with: non_required_connections)
+				increase(index, by: 1)
 	connections = join(characters_between(in: 10 ^ subtract(5, length(connections)), between: 1, and: 100), with: connections)
 	generated_tile = characters_between(in: connections, between: 0, and: 4)
 	index = (y * width + x) * 4
+	check_if_else(length(non_required_connections) <= 0):
+		Self.↩️add_to_ungenerated_tiles_queue = 0
+	else:
+		queue = ":"
+		check_once_if(non_required_connections MATCHES "R" and x < width - 1):
+			queue = join(queue, with: join(x + 1, with: join(y, with: ":")))
+		check_once_if(non_required_connections MATCHES "L" and x > 0):
+			queue = join(queue, with: join(x - 1, with: join(y, with: ":")))
+		check_once_if(non_required_connections MATCHES "U" and y < height - 1):
+			queue = join(queue, with: join(x, with: join(y + 1, with: ":")))
+		check_once_if(non_required_connections MATCHES "D" and y > 0):
+			queue = join(queue, with: join(x, with: join(y - 1, with: ":")))
+		Self.↩️add_to_ungenerated_tiles_queue = characters_between(in: queue, between: 0, and: length(queue) - 1)
 	Self.↩️board_with_generated_tile = join(characters_between(in: board, between: 0, and: index), with: join(generated_tile, with: characters_between(in: board, between: index + 4, and: length(board))))
+
+custom_block check_if_this_will_lead_to_duplicate_solutions(board: 0, x: 0, y: 0, width: 0, height: 0, connections: 0, random_direction_options: 0, index: 0, amount: 0):
+	result = "Unknown"
+	rdi = characters_between(in: random_direction_options, between: index, and: index + amount)
+	resulting_connections = join(connections, with: rdi)
+	check_if_else(subtract(length(resulting_connections), 1) % 2 == 0):
+		result = "false"
+	else:
+		check_if_else(resulting_connections MATCHES "R" and resulting_connections MATCHES "L"):
+			# This is a horizontal t
+			index = y * width + x - 1
+			custom_block check_tile_equivalency(a: characters_between(in: board, between: index * 4, and: index * 4 + 4), b: resulting_connections)
+			check_if_else(x > 1 and Self.↩️is_equivalent_tile == "true"):
+				tile = "Unknown"
+				check_if_else(resulting_connections MATCHES "U"):
+					check_if_else(y <= 2):
+						result = "false"
+					else:
+						index = y * width + x - 1 - width
+						tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+				else:
+					check_if_else(y >= height - 3):
+						result = "false"
+					else:
+						index = y * width + x - 1 + width
+						tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+				check_once_if(result == "Unknown"):
+					custom_block check_tile_equivalency(a: tile, b: resulting_connections)
+					check_if_else(subtract(length(tile), 1) % 2 == 2 or Self.↩️is_equivalent_tile):
+						result = "false"
+					custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+					check_once_if(Self.↩️is_opposite_tile != "true"):
+						result = "false"
+				check_once_if(result == "Unknown"):
+					index = y * width + x - width
+					tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+					custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+					result = Self.↩️is_opposite_tile
+			else:
+				check_once_if(x < width - 2):
+					index = y * width + x - 1
+					custom_block check_tile_equivalency(a: characters_between(in: board, between: index * 4, and: index * 4 + 4), b: resulting_connections)
+					check_once_if(Self.↩️is_equivalent_tile == "true"):
+						tile = "Unknown"
+						check_if_else(resulting_connections MATCHES "U"):
+							check_if_else(y <= 2):
+								result = "false"
+							else:
+								index = y * width + x + 1 - width
+								tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+						else:
+							check_if_else(y >= height - 3):
+								result = "false"
+							else:
+								index = y * width + x + 1 + width
+								tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+						check_once_if(result == "Unknown"):
+							custom_block check_tile_equivalency(a: tile, b: resulting_connections)
+							check_if_else(subtract(length(tile), 1) % 2 == 2 or Self.↩️is_equivalent_tile):
+								result = "false"
+							custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+							check_once_if(Self.↩️is_opposite_tile != "true"):
+								result = "false"
+						check_once_if(result == "Unknown"):
+							index = y * width + x - width
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+							result = Self.↩️is_opposite_tile
+		else:
+			# This is a vertical t
+			index = y * width + x - width
+			custom_block check_tile_equivalency(a: characters_between(in: board, between: index * 4, and: index * 4 + 4), b: resulting_connections)
+			check_if_else(y > 1 and Self.↩️is_equivalent_tile == "true"):
+				tile = "Unknown"
+				check_if_else(resulting_connections MATCHES "R"):
+					check_if_else(x <= 2):
+						result = "false"
+					else:
+						index = y * width + x - 1 - width
+						tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+				else:
+					check_if_else(x >= width - 3):
+						result = "false"
+					else:
+						index = y * width + x + 1 - width
+						tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+				check_once_if(result == "Unknown"):
+					custom_block check_tile_equivalency(a: tile, b: resulting_connections)
+					check_if_else(subtract(length(tile), 1) % 2 == 2 or Self.↩️is_equivalent_tile):
+						result = "false"
+					custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+					check_once_if(Self.↩️is_opposite_tile != "true"):
+						result = "false"
+				check_once_if(result == "Unknown"):
+					# This seems like a bug? Why did I do it like this?
+					index = y * width + x - 1
+					tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+					custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+					result = Self.↩️is_opposite_tile
+			else:
+				check_once_if(y < height - 2):
+					index = y * width + x + width
+					custom_block check_tile_equivalency(a: characters_between(in: board, between: index * 4, and: index * 4 + 4), b: resulting_connections)
+					check_once_if(Self.↩️is_equivalent_tile == "true"):
+						tile = "Unknown"
+						check_if_else(resulting_connections MATCHES "R"):
+							check_if_else(x <= 2):
+								result = "false"
+							else:
+								index = y * width + x - 1 + width
+								tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+						else:
+							check_if_else(x >= width - 3):
+								result = "false"
+							else:
+								index = y * width + x + 1 + width
+								tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+						check_once_if(result == "Unknown"):
+							custom_block check_tile_equivalency(a: tile, b: resulting_connections)
+							check_if_else(subtract(length(tile), 1) % 2 == 2 or Self.↩️is_equivalent_tile):
+								result = "false"
+							custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+							check_once_if(Self.↩️is_opposite_tile != "true"):
+								result = "false"
+						check_once_if(result == "Unknown"):
+							# This seems like a bug? Why did I do it like this?
+							index = y * width + x - 1
+							tile = characters_between(in: board, between: index * 4, and: index * 4 + 4)
+							custom_block check_if_tiles_are_opposites(a: tile, b: resulting_connections)
+							result = Self.↩️is_opposite_tile
+	check_once_if(result == "Unknown"):
+		result = "false"
+		# show_popup(message: "Bad generation duplciate solution")
+		# show_popup(message: join(x, with: join(",", with: y)))
+		# repeat_forever:
+		# 	wait(seconds: 1000000)
+	Self.↩️will_probably_lead_to_duplicate_solutions = result
+
+custom_block check_if_tiles_are_opposites(a: "", b: ""):
+	rotated_a = ":"
+	check_once_if(a MATCHES "L"):
+		rotated_a = join("R", with: rotated_a)
+	check_once_if(a MATCHES "R"):
+		rotated_a = join("L", with: rotated_a)
+	check_once_if(a MATCHES "U"):
+		rotated_a = join("D", with: rotated_a)
+	check_once_if(a MATCHES "D"):
+		rotated_a = join("U", with: rotated_a)
+	custom_block check_tile_equivalency(a: rotated_a, b: b)
+	Self.↩️is_opposite_tile = Self.↩️is_equivalent_tile
+
+custom_block check_tile_equivalency(a: "", b: ""):
+	index = 0
+	result = "true"
+	repeat(times: length(a) - 1):
+		check_once_if(not(b MATCHES character_at_index(in: a, at: index))):
+			result = "false"
+		increase(index, by: 1)
+	Self.↩️is_equivalent_tile = result
 
 custom_block get_tile_at_2d(x: 0, y: 0, board: "", width: 0):
 	index = (y * width + x) * 4
