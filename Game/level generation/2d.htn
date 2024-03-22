@@ -70,7 +70,7 @@ custom_block board_generation_2d_queue_search_loop(width: 0, height: 0, board: 0
 
 custom_block force_connection(board: "board", at_index: 1, to: "R"):
 	# Technically this may overwrite already forced connections, but that is very unlikely.
-	tile = join("R", with: characters_between(in: board, between: at_index * 4 + 1, and: at_index * 4 + 4))
+	tile = join(to, with: characters_between(in: board, between: at_index * 4 + 1, and: at_index * 4 + 4))
 	Self.↩️board_with_forced_connection = join(characters_between(in: board, between: 0, and: at_index * 4), with: join(tile, with: characters_between(in: board, between: at_index * 4 + 4, and: length(board))))
 
 custom_block find_first_ungenerated_location_next_to_defined_location_in(board: 0, width: 0, height: 0):
@@ -171,6 +171,7 @@ custom_block generate_tile_at_2d(x: 0, y: 0, board: "", width: 5, height: 5):
 	all_used_or_forbidden_directions = join(connections, with: forbidden_connections)
 	custom_block get_random_direction_options_2d(forbidden: all_used_or_forbidden_directions)
 	custom_block shuffle_random_direction_options_2d
+	rdo = Self.↩️random_direction_options
 	check_once_if(length(Self.↩️random_direction_options) > 1):
 		custom_block get_random_number(between: 0, and_max: length(Self.↩️random_direction_options) - 2)
 		index = Self.↩️random_number
@@ -391,7 +392,7 @@ custom_block get_random_direction_options_2d_U(forbidden: "", result: ":"):
 		custom_block get_random_direction_options_2d_D(forbidden: forbidden, result: result)
 custom_block get_random_direction_options_2d_D(forbidden: "", result: ":"):
 	check_if_else(not(forbidden MATCHES "D")):
-		Self.↩️random_direction_options = join("L", with: result)
+		Self.↩️random_direction_options = join("D", with: result)
 	else:
 		Self.↩️random_direction_options = result
 
