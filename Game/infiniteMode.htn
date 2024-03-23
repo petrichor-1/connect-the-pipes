@@ -1,0 +1,33 @@
+Import "./level generation/2d.htn"
+Import "../helpers/rng.htn"
+Import "../helpers/lists.htn"
+
+custom_block infinite_mode_level_generation:
+	index_of_level_generation = Game.current_level_index
+	repeat_forever:
+		check_if_else(length(Game.generated_levels) < 1000):
+			Self.random_seed = index_of_level_generation
+			custom_block get_random_number(between: 3, and_max: 8)
+			d1 = Self.↩️random_number
+			custom_block get_random_number(between: 3, and_max: 8)
+			d2 = Self.↩️random_number
+			width = max(d1, d2)
+			height = min(d1, d2)
+			custom_block generate_level_2d(width: width, height: height, seed: index_of_level_generation)
+			custom_block append_to(list: Game.generated_levels, new_item: Self.↩️generated_board)
+			Game.generated_levels = Self.↩️📊appended_list
+			increase(index_of_level_generation, by: 1)
+		else:
+			check_once_if(Game.current_level_index > Game.generated_levels_list_offset):
+				list = Game.generated_levels
+				new_offset = Game.generated_levels_list_offset
+				repeat(times: Game.current_level_index - Game.generated_levels_list_offset):
+					custom_block remove_item_in(list: list, at_index: 0)
+					# show_popup(message: join("Before: ", with: join(list, with: join("
+					# 
+					# after: ", with: Self.↩️📊removed_list))))
+					list = Self.↩️📊removed_list
+					increase(new_offset, by: 1)
+				custom_block rebuild(list: list)
+				Game.generated_levels = Self.↩️📊rebuilt_list
+				Game.generated_levels_list_offset = new_offset

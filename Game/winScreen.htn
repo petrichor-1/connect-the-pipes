@@ -155,7 +155,7 @@ Scene game:
 			# Just the last clone will be 99% invisible. This lets it be tapped but not seen
 			custom_block ease_invisibility(from: 100, to: 99 * max(0, Self.clone_index - 1), milliseconds: 250 * Game.win_screen_animation_skipped)
 		When is_tapped(Self):
-			check_if_else(Game.current_level_index >= 1000):
+			check_if_else(Game.current_level_index >= 1000 and Game.infinite_mode_is_active != "true"):
 				broadcast_message(named: Game.📣back_to_level_select)
 			else:
 				check_if_else(Game.daily_challenge_active == "true" and Game.current_level_index >= 10):

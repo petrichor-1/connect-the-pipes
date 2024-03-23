@@ -21,6 +21,7 @@ text level_names(text: "4x4"):
 			create_clones_of_this_object(times: 6)
 			broadcast_message(named: Game.📣display_level_section_selector)
 	When i_get_a_message(Game.📣display_level_section_selector):
+		Game.infinite_mode_is_active = "false"
 		set_position(to_x: -100000, y: 014)
 		my_y = Game.height - 96 - Self.clone_index * (Game.height - 128) / Self.total_clones
 		my_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
@@ -40,12 +41,26 @@ text level_names(text: "4x4"):
 				set_text(to: join("Daily challenge ", with: Self.↩️formatted_date), color: h(my_hue, s: my_saturation, b: my_brightness))
 				set_size(percent: 100)
 		else:
-			check_if_else(Self.amount_til_unlocked > 0):
-				set_text(to: join("Locked! (Complete ", with: join(Self.amount_til_unlocked, with: join(" more ", with: join(Self.clone_index + 3, with: join("x", with: join(Self.clone_index + 3, with: " levels)")))))), color: h(my_hue, s: 5, b: 5))
-				set_size(percent: 50)
+			check_if_else(Self.clone_index == 5):
+				Self.amount_til_unlocked = 0
+				index = 0
+				repeat(times: 5):
+					custom_block get_item_in(list: User.progress, at_index: index)
+					increase(Self.amount_til_unlocked, by: 1000 - Self.↩️📊list_item)
+					increase(index, by: 1)
+				check_if_else(Self.amount_til_unlocked > 0):
+					set_text(to: join("Locked! (Complete ", with: join(Self.amount_til_unlocked, with: " more levels)")), color: h(my_hue, s: 5, b: 5))
+					set_size(percent: 50)
+				else:
+					set_text(to: "Infinite Mode", color: h(my_hue, s: my_saturation, b: my_brightness))
+					set_size(percent: 100)
 			else:
-				set_text(to: join(Self.clone_index + 4, with: join("x", with: Self.clone_index + 4)), color: h(my_hue, s: my_saturation, b: my_brightness))
-				set_size(percent: 100)
+				check_if_else(Self.amount_til_unlocked > 0):
+					set_text(to: join("Locked! (Complete ", with: join(Self.amount_til_unlocked, with: join(" more ", with: join(Self.clone_index + 3, with: join("x", with: join(Self.clone_index + 3, with: " levels)")))))), color: h(my_hue, s: 5, b: 5))
+					set_size(percent: 50)
+				else:
+					set_text(to: join(Self.clone_index + 4, with: join("x", with: Self.clone_index + 4)), color: h(my_hue, s: my_saturation, b: my_brightness))
+					set_size(percent: 100)
 		custom_block ease_position_and_size(from_x: -100, to_x: Game.width / 2, from_y: my_y, to_y: my_y, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
 	When i_get_a_message(Game.📣🎨display_level_section):
 		custom_block ease_position_and_size(from_x: Self.x_position, to_x: -300, from_y: Self.y_position, to_y: Self.y_position, from_size: Self.size_as_a_percent, to_size: Self.size_as_a_percent, milliseconds: 250)
@@ -66,20 +81,28 @@ text level_names(text: "4x4"):
 			wait_milliseconds(100)
 			clear
 		else:
-			check_once_if(Self.amount_til_unlocked <= 0):
-				Game.👆y_position = Self.y_position
-				Game.👆height = (Game.height - 128) / Self.total_clones
-				broadcast_message(named: Game.📣👆draw)
-				Game.🎨level_section_index = Self.clone_index
-				Game.level_section_name = Self.text
-				Game.primary_color_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
-				Game.primary_color_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
-				Game.primary_color_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
-				Game.board_width = 4 + Self.clone_index
-				Game.board_height = Game.board_width
-				broadcast_message(named: Game.📣🎨display_level_section)
-				wait_milliseconds(100)
+			check_if_else(Self.clone_index == 5 and Self.amount_til_unlocked <= 0):
+				Game.infinite_mode_is_active = "true"
+				Game.primary_color_hue = random(0, to: 360)
+				Game.primary_color_saturation = 32
+				Game.primary_color_brightness = 90
 				clear
+				broadcast_message(named: Game.📣play_level)
+			else:
+				check_once_if(Self.amount_til_unlocked <= 0):
+					Game.👆y_position = Self.y_position
+					Game.👆height = (Game.height - 128) / Self.total_clones
+					broadcast_message(named: Game.📣👆draw)
+					Game.🎨level_section_index = Self.clone_index
+					Game.level_section_name = Self.text
+					Game.primary_color_hue = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9, and: Self.clone_index * 9 + 3)
+					Game.primary_color_saturation = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 3, and: Self.clone_index * 9 + 6)
+					Game.primary_color_brightness = characters_between(in: Game.level_section_colors, between: Self.clone_index * 9 + 6, and: Self.clone_index * 9 + 9)
+					Game.board_width = 4 + Self.clone_index
+					Game.board_height = Game.board_width
+					broadcast_message(named: Game.📣🎨display_level_section)
+					wait_milliseconds(100)
+					clear
 
 text level_section_lines(text: ""):
 	When i_get_a_message(Game.📣display_level_section_selector):
@@ -114,6 +137,8 @@ text level_section_progress(text: ""):
 		progress = Self.↩️📊list_item
 		check_once_if((Self.clone_index - 1) % level_names.total_clones == 6):
 			progress = random(0, to: 1000)
+		check_once_if((Self.clone_index - 1) % level_names.total_clones == 5):
+			progress = 1000
 		my_y = Game.height - 96 - (Self.clone_index - 1) % level_names.total_clones * (Game.height - 128) / level_names.total_clones
 		my_hue = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 3)
 		my_saturation = characters_between(in: Game.level_section_colors, between: (Self.clone_index - 1) % level_names.total_clones * 9 + 3, and: (Self.clone_index - 1) % level_names.total_clones * 9 + 6)
