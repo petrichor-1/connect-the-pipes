@@ -126,7 +126,7 @@ Scene game:
 				broadcast_message(named: Game.📣update_colors)
 		When object_is_cloned:
 			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
-			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, (Game.width - 16) / Game.board_width)
 		When object_is_cloned:
 			custom_block get_position_of_tile(index: Self.index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
 		When object_is_cloned:
@@ -353,7 +353,7 @@ Scene game:
 			aspect_ratio = Self.height / Self.width
 			set_width(0.2 * Self.tile_size * Self.📺width_multiplier, height: 0.2 * aspect_ratio * Self.tile_size * Self.📺width_multiplier)
 		When object_is_cloned:
-			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, (Game.width - 16) / Game.board_width)
 		When object_is_cloned:
 			custom_block get_position_of_tile(index: Game.main_tile_index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)
 		When object_is_cloned:

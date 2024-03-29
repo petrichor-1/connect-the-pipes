@@ -20,7 +20,7 @@ Scene game:
 			destroy
 		When object_is_cloned:
 			Self.index = Self.clone_index - Original_object.clone_index_offset - 1
-			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, (Game.width - 16) / Game.board_width)
 			set_invisibility(percent: 100)
 		When object_is_cloned:
 			custom_block get_position_of_tile(index: Self.index, board_width: Game.board_width, board_height: Game.board_height, tile_size: Self.tile_size)

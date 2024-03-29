@@ -16,7 +16,7 @@ Scene game:
 			Self.index = 0
 			set_position(to_x: -100000, y: -1000000)
 			set_color(h(35, s: 5, b: 90))
-			Self.tile_size = min(Game.height * 0.6 / Game.board_height, Game.width * 0.6 / Game.board_width)
+			Self.tile_size = min(Game.height * 0.6 / Game.board_height, (Game.width - 16) / Game.board_width)
 			set_width(Self.tile_size, height: Self.tile_size)
 			set_invisibility(percent: 10)
 		When i_get_a_message(Game.📣dpad_left_pressed):
