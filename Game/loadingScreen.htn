@@ -30,7 +30,7 @@ Scene game:
 		When Game.is_loading == "true":
 			set_size(percent: 0)
 			set_invisibility(percent: 0)
-			iterations = 35 * Game.board_width * Game.board_height
+			iterations = 18 * Game.board_width * Game.board_height
 			width = 0
 			repeat(times: iterations):
 				increase(width, by: Game.width / iterations)
