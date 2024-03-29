@@ -370,7 +370,8 @@ Scene game:
 			wait(seconds: 0)
 			Self.center_x_position = Self.origin_position_x + Self.tile_size * Self.x
 			Self.center_y_position = Self.origin_position_y + Self.tile_size * Self.y
-			Self.displayed_rotation = Self.times_tapped * 90
+			# Self.displayed_rotation = Self.times_tapped * 90
+			Self.times_tapped = -1
 			set_position(to_x: Self.center_x_position + Self.tile_size * Self.📺offset_radius * cos(Self.📺offset_angle + Self.displayed_rotation), y: Self.center_y_position + Self.tile_size * Self.📺offset_radius * sin(Self.📺offset_angle + Self.displayed_rotation))
 			set_angle(Self.📺rotation_offset + Self.displayed_rotation)
 			repeat_forever:
