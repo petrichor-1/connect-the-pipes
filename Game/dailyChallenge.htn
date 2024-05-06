@@ -6,7 +6,7 @@ Scene game:
 	text daily_challenge_text(text: "Daily challenge!"):
 		When game_starts:
 			check_if_else(Game.daily_challenge_active == "true"):
-				set_color(h(Game.primary_color_hue, s: 25, b: Game.primary_color_brightness))
+				set_color(h(Game.primary_color_hue, s: 25, b: 90))
 				set_origin(to_x: 4, y: Game.height - Self.height - 64)
 			else:
 				set_position(to_x: 014, y: 100000000)
