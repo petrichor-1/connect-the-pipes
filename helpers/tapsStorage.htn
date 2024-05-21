@@ -1,11 +1,19 @@
+Import "./booleans.htn"
+
 custom_block setup_taps_storage_if_needed:
-	check_once_if(User.taps == 0):
+	check_if_else(User.taps == 0):
 		custom_block generate_long_string_of(str: "----------", desired_length: 14000):
 			check_if_else(length(str) >= desired_length):
 				Self.↩️long_string = characters_between(in: str, between: 0, and: desired_length)
 			else:
 				custom_block generate_long_string_of(str: join(str, with: str), desired_length: desired_length)
 		User.taps = Self.↩️long_string
+		User.has_migrated_to_hex_taps = Game.true
+	else:
+		check_once_if(not(User.has_migrated_to_hex_taps)):
+			# Use game variable to avoid duplicating it a bunch
+			Game.current_taps_migration = User.taps
+			custom_block migrate_to_hex_taps(index: 0, iters: 0)
 
 custom_block get_taps_for_level(with_size: 0, at_index: 0):
 	index = (with_size - 4) * 1000 + at_index
@@ -13,9 +21,39 @@ custom_block get_taps_for_level(with_size: 0, at_index: 0):
 	# show_popup(message: join("At index ", with: join(index, with: join(", I found ", with: join(characters_between(in: User.taps, between: index * 2, and: index * 2 + 2), with: join(" (further context = ", with: join(characters_between(in: User.taps, between: index * 2 - 10, and: index * 2 + 2 + 10), with: ")")))))))
 	check_once_if(taps == "--"):
 		taps = 1e100
+	check_once_if(User.has_migrated_to_hex_taps):
+		taps = 1 * join("0x", with: taps)
 	Self.↩️taps = taps
 
 custom_block set_taps_for_level(with_size: 0, at_index: 0, taps: 0):
-	taps = min(99, max(0, taps))
+	maximum = 99
+	check_once_if(User.has_migrated_to_hex_taps):
+		maximum = 1 * "0xff"
+	taps = min(maximum, max(0, taps))
 	index = (with_size - 4) * 1000 + at_index
+	check_once_if(User.has_migrated_to_hex_taps):
+		taps = join(character_at_index(in: "0123456789ABCDEF", at: floor(taps / 16)), with: character_at_index(in: "0123456789ABCDEF", at: taps % 16))
 	User.taps = join(characters_between(in: User.taps, between: 0, and: index * 2), with: join(characters_between(in: 100 + taps, between: 1, and: 3), with: characters_between(in: User.taps, between: index * 2 + 2, and: length(User.taps))))
+
+custom_block migrate_to_hex_taps(index: 0, iters: 0):
+	check_if_else(index >= length(Game.current_taps_migration) / 2):
+		User.taps = Game.current_taps_migration
+		Game.current_taps_migration = 0
+		User.has_migrated_to_hex_taps = Game.true
+	else:
+		check_if_else(iters >= 500):
+			wait(seconds: 0)
+			custom_block migrate_to_hex_taps(index: index, iters: 0)
+		else:
+			custom_block migrate_to_hex_taps_inner1(index: index, iters: iters, current: characters_between(in: Game.current_taps_migration, between: index * 2, and: 2 + index * 2))
+
+custom_block migrate_to_hex_taps_inner1(index: 0, iters: 0, current: "--"):
+	check_if_else(7==8):
+		#noooo, there's noooOOOooo single-frame recursion heeere!
+	else:
+		check_if_else(current == "--"):
+			custom_block migrate_to_hex_taps(index: index + 1, iters: iters + 1)
+		else:
+			hex = join(character_at_index(in: "0123456789ABCDEF", at: floor(current / 16)), with: character_at_index(in: "0123456789ABCDEF", at: current % 16))
+			Game.current_taps_migration = join(characters_between(in: Game.current_taps_migration, between: 0, and: index * 2), with: join(hex, with: characters_between(in: Game.current_taps_migration, between: index * 2 + 2, and: length(Game.current_taps_migration))))
+			custom_block migrate_to_hex_taps(index: index + 1, iters: 0)
